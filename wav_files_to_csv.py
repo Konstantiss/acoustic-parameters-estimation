@@ -7,16 +7,20 @@ import csv
 DATA_PATH = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Dev/Speech'
 
 
-def walk(dir):
+def walk(dir, RETURN_PATH):
     files = []
     for p, d, f in os.walk(dir):
         for file in f:
             if file.endswith('.wav'):
-                files.append(p + '/' + file)
+                if(RETURN_PATH == True):
+                    files.append(p + '/' + file)
+                else:
+                    files.append(file)
     return files
 
 
-audio_files = walk(DATA_PATH)
+audio_files = walk(DATA_PATH, RETURN_PATH=True)
+filenames = walk(DATA_PATH, RETURN_PATH=False)
 
 fn_list_i = [
     feature.chroma_stft,
@@ -48,6 +52,7 @@ output_csv = 'audio_features.csv'
 
 header = [
     'file',
+    'filename'
     'chroma_stft',
     'spectral_centroid',
     'spectral_bandwidth',
@@ -56,7 +61,12 @@ header = [
     'zero_crossing_rate'
 ]
 
-# Append the file names to the audio features list that will be written to the csv
+# Append the file names and the full paths to the audio features list that will be written to the csv
+index = 0
+for sublist in audio_features:
+    sublist.insert(0, filenames[index])
+    index += 1
+
 index = 0
 for sublist in audio_features:
     sublist.insert(0, audio_files[index])
