@@ -52,7 +52,7 @@ output_csv = 'audio_features.csv'
 
 header = [
     'file',
-    'filename'
+    'filename',
     'chroma_stft',
     'spectral_centroid',
     'spectral_bandwidth',
