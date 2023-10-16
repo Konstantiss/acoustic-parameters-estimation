@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
 
 PLOT_FEATURES = False
 
@@ -26,7 +27,7 @@ if PLOT_FEATURES:
 
 labels = np.array(features[['FBDRRMean(Ch)', 'FBT60Mean(Ch)']])
 
-#Drop label columns and string columns
+# Drop label columns and string columns
 features = features.drop(['FBDRRMean(Ch)', 'FBT60Mean(Ch)', 'file', 'filename'], axis=1)
 
 feature_list = list(features.columns)
@@ -43,21 +44,27 @@ print('Testing Labels Shape:', test_labels.shape)
 rf = RandomForestRegressor(n_estimators=1000, random_state=42)
 rf.fit(train_features, train_labels)
 
-predictions = rf.predict(test_features)
-errors = abs(predictions - test_labels)
-print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 
-# Calculate mean absolute percentage error (MAPE)
-mape = 100 * (errors / test_labels)
-accuracy = 100 - np.mean(mape)
-print('Accuracy:', round(accuracy, 2), '%.')
+def evaluate(model, test_features, test_labels):
+    predictions = model.predict(test_features)
+    errors = abs(predictions - test_labels)
+    mape = 100 * np.mean(errors / test_labels)
+    accuracy = 100 - mape
+    print('Model Performance')
+    print('Average Error: {:0.4f} degrees.'.format(np.mean(errors)))
+    print('Accuracy = {:0.2f}%.'.format(accuracy))
+
+    return accuracy
+
+
+evaluate(rf, test_features, test_labels)
 
 # Get numerical feature importances
 importances = list(rf.feature_importances_)
 # List of tuples with variable and importance
 feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
 # Sort the feature importances by most important first
-feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
+feature_importances = sorted(feature_importances, key=lambda x: x[1], reverse=True)
 # Print out the feature and importances
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
@@ -66,7 +73,7 @@ plt.style.use('fivethirtyeight')
 # list of x locations for plotting
 x_values = list(range(len(importances)))
 # Make a bar chart
-plt.bar(x_values, importances, orientation = 'vertical')
+plt.bar(x_values, importances, orientation='vertical')
 # Tick labels for x axis
 plt.xticks(x_values, feature_list, rotation='vertical')
 # Axis labels and title
@@ -74,3 +81,21 @@ plt.ylabel('Importance')
 plt.xlabel('Variable')
 plt.title('Variable Importances')
 plt.show()
+
+param_grid = {
+    'bootstrap': [True],
+    'max_depth': [90, 100, 110, 120],
+    'max_features': [2, 3, 4],
+    'min_samples_leaf': [3, 4, 5],
+    'min_samples_split': [8, 10, 12],
+    'n_estimators': [500, 1000, 1500, 2000]
+}
+rf = RandomForestRegressor()
+grid_search = GridSearchCV(estimator=rf, param_grid=param_grid,
+                           cv=3, n_jobs=-1, verbose=2)
+grid_search.fit(train_features, train_labels)
+
+print("Best parameters: ", grid_search.best_params_)
+
+best_grid = grid_search.best_estimator_
+grid_accuracy = evaluate(best_grid, test_features, test_labels)
