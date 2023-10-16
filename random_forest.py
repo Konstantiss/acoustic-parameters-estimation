@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 PLOT_FEATURES = False
 
@@ -22,4 +23,17 @@ if PLOT_FEATURES:
     features['zero_crossing_rate'].plot(title='Zero Crossing Rate')
     plt.show()
 
+labels = np.array(features[['FBDRRMean(Ch)', 'FBT60Mean(Ch)']])
 
+features = features.drop(['FBDRRMean(Ch)', 'FBT60Mean(Ch)'], axis=1)
+
+feature_list = list(features.columns)
+
+features = np.array(features)
+
+train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.25,
+                                                                            random_state=42)
+print('Training Features Shape:', train_features.shape)
+print('Training Labels Shape:', train_labels.shape)
+print('Testing Features Shape:', test_features.shape)
+print('Testing Labels Shape:', test_labels.shape)
