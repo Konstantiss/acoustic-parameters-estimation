@@ -82,20 +82,23 @@ plt.xlabel('Variable')
 plt.title('Variable Importances')
 plt.show()
 
-param_grid = {
-    'bootstrap': [True],
-    'max_depth': [90, 100, 110, 120],
-    'max_features': [2, 3, 4],
-    'min_samples_leaf': [3, 4, 5],
-    'min_samples_split': [8, 10, 12],
-    'n_estimators': [500, 1000, 1500, 2000]
-}
-rf = RandomForestRegressor()
-grid_search = GridSearchCV(estimator=rf, param_grid=param_grid,
-                           cv=3, n_jobs=-1, verbose=2)
-grid_search.fit(train_features, train_labels)
+GRID_SEARCH = False
 
-print("Best parameters: ", grid_search.best_params_)
+if GRID_SEARCH:
+    param_grid = {
+        'bootstrap': [True],
+        'max_depth': [90, 100, 110, 120],
+        'max_features': [2, 3, 4],
+        'min_samples_leaf': [3, 4, 5],
+        'min_samples_split': [8, 10, 12],
+        'n_estimators': [500, 1000, 1500, 2000]
+    }
+    rf = RandomForestRegressor()
+    grid_search = GridSearchCV(estimator=rf, param_grid=param_grid,
+                               cv=3, n_jobs=-1, verbose=2)
+    grid_search.fit(train_features, train_labels)
 
-best_grid = grid_search.best_estimator_
-grid_accuracy = evaluate(best_grid, test_features, test_labels)
+    print("Best parameters: ", grid_search.best_params_)
+
+    best_grid = grid_search.best_estimator_
+    grid_accuracy = evaluate(best_grid, test_features, test_labels)
