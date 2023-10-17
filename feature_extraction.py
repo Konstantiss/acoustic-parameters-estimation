@@ -12,7 +12,7 @@ def walk(dir, RETURN_PATH):
     for p, d, f in os.walk(dir):
         for file in f:
             if file.endswith('.wav'):
-                if(RETURN_PATH == True):
+                if (RETURN_PATH == True):
                     files.append(p + '/' + file)
                 else:
                     files.append(file)
