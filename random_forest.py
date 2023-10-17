@@ -41,8 +41,9 @@ print('Training Labels Shape:', train_labels.shape)
 print('Testing Features Shape:', test_features.shape)
 print('Testing Labels Shape:', test_labels.shape)
 
-rf = RandomForestRegressor(n_estimators=1000, random_state=42)
+rf = RandomForestRegressor(n_estimators=2000, random_state=42, n_jobs=-1, verbose=2)
 rf.fit(train_features, train_labels)
+print("Random forest parameters: ", rf.get_params())
 
 
 def evaluate(model, test_features, test_labels):
@@ -87,11 +88,11 @@ GRID_SEARCH = False
 if GRID_SEARCH:
     param_grid = {
         'bootstrap': [True],
-        'max_depth': [90, 100, 110, 120],
-        'max_features': [2, 3, 4],
-        'min_samples_leaf': [3, 4, 5],
-        'min_samples_split': [8, 10, 12],
-        'n_estimators': [500, 1000, 1500, 2000]
+        'max_depth': [60, 70, 80, 90, 100, 110, 120, 130],
+        'max_features': [1, 2, 3, 4, 5, 6],
+        'min_samples_leaf': [1, 2, 3, 4],
+        'min_samples_split': [2, 6, 10],
+        'n_estimators': [500, 750, 1000, 1250]
     }
     rf = RandomForestRegressor()
     grid_search = GridSearchCV(estimator=rf, param_grid=param_grid,
