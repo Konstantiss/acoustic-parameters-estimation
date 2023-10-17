@@ -76,7 +76,7 @@ x_values = list(range(len(importances)))
 # Make a bar chart
 plt.bar(x_values, importances, orientation='vertical')
 # Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='vertical')
+plt.xticks(x_values, feature_list, rotation='horizontal', size=10)
 # Axis labels and title
 plt.ylabel('Importance')
 plt.xlabel('Variable')
