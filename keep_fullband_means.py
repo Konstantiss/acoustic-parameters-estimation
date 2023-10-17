@@ -14,9 +14,9 @@ for dir, subDirs, files in os.walk(DATA_PATH):
         csv_name = csv_name[0]
         csv_path = path.join(path.join(dir, subDir), csv_name)
         df = pd.read_csv(csv_path)
-        #Remove spaces from column names
+        # Remove spaces from column names
         df.columns = df.columns.str.replace(' ', '')
-        #Remove ":" from column names
+        # Remove ":" from column names
         df.columns = df.columns.str.replace(':', '')
         df_reduced = df.drop_duplicates(subset=['Filename'], keep="first")
         output_csv_path = csv_path.replace(".csv", "_reduced.csv")
