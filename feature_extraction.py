@@ -24,14 +24,19 @@ filenames = walk(DATA_PATH, RETURN_PATH=False)
 
 fn_list_i = [
     feature.chroma_stft,
+    feature.chroma_cqt,
+    feature.chroma_cens,
+    feature.mfcc,
     feature.spectral_centroid,
     feature.spectral_bandwidth,
+    feature.spectral_contrast,
     feature.spectral_rolloff
 ]
 
 fn_list_ii = [
     feature.rms,
-    feature.zero_crossing_rate
+    feature.zero_crossing_rate,
+    feature.spectral_flatness
 ]
 
 
@@ -54,8 +59,13 @@ header = [
     'file',
     'filename',
     'chroma_stft',
+    'chroma_cqt',
+    'chroma_cens',
+    'mfcc',
     'spectral_centroid',
     'spectral_bandwidth',
+    'spectral_contrast',
+    'spectral_flatness',
     'spectral_rolloff',
     'rmse',
     'zero_crossing_rate'
