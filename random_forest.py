@@ -83,16 +83,16 @@ plt.xlabel('Variable')
 plt.title('Variable Importances')
 plt.show()
 
-GRID_SEARCH = False
+GRID_SEARCH = True
 
 if GRID_SEARCH:
     param_grid = {
         'bootstrap': [True],
-        'max_depth': [60, 70, 80, 90, 100, 110, 120, 130],
-        'max_features': [1, 2, 3, 4, 5, 6],
-        'min_samples_leaf': [1, 2, 3, 4],
-        'min_samples_split': [2, 6, 10],
-        'n_estimators': [500, 750, 1000, 1250]
+        'max_features': [1, 7, 9, 10, 11],
+        'min_samples_leaf': [1, 2, 3],
+        'min_samples_split': [1, 2, 3],
+        'n_estimators': [1000],
+        'random_state': [40, 45, 50, 55]
     }
     rf = RandomForestRegressor()
     grid_search = GridSearchCV(estimator=rf, param_grid=param_grid,
