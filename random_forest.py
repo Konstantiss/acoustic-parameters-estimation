@@ -69,19 +69,22 @@ feature_importances = sorted(feature_importances, key=lambda x: x[1], reverse=Tr
 # Print out the feature and importances
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
-# Set the style
-plt.style.use('fivethirtyeight')
-# list of x locations for plotting
-x_values = list(range(len(importances)))
-# Make a bar chart
-plt.bar(x_values, importances, orientation='vertical')
-# Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='horizontal', size=10)
-# Axis labels and title
-plt.ylabel('Importance')
-plt.xlabel('Variable')
-plt.title('Variable Importances')
-plt.show()
+PLOT_VARIABLE_IMPORTANCES = False
+
+if PLOT_VARIABLE_IMPORTANCES:
+    # Set the style
+    plt.style.use('fivethirtyeight')
+    # list of x locations for plotting
+    x_values = list(range(len(importances)))
+    # Make a bar chart
+    plt.bar(x_values, importances, orientation='vertical')
+    # Tick labels for x axis
+    plt.xticks(x_values, feature_list, rotation='horizontal', size=10)
+    # Axis labels and title
+    plt.ylabel('Importance')
+    plt.xlabel('Variable')
+    plt.title('Variable Importances')
+    plt.show()
 
 GRID_SEARCH = True
 
@@ -90,7 +93,7 @@ if GRID_SEARCH:
         'bootstrap': [True],
         'max_features': [1, 7, 9, 10, 11],
         'min_samples_leaf': [1, 2, 3],
-        'min_samples_split': [1, 2, 3],
+        'min_samples_split': [2, 3, 4],
         'n_estimators': [1000],
         'random_state': [40, 45, 50, 55]
     }
