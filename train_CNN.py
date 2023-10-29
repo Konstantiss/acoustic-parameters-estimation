@@ -15,10 +15,10 @@ device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
 
 print("Pytorch running on:", device)
 
+
 def train_single_epoch(model, dataloader, loss_fn, optimizer, device):
     for waveform, drr, rt60 in tqdm.tqdm(dataloader):
         waveform = waveform.to(device)
-        # label=pt.from_numpy(numpy.array(label))
         drr = drr.to(device)
         rt60 = rt60.to(device)
         # calculate loss and preds
@@ -38,13 +38,21 @@ def train(model, dataloader, loss_fn, optimizer, device, epochs):
         print('-------------------------------------------')
     print('Finished Training')
 
-DATA_PATH = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Dev/Speech'
+
+EVAL = True
+
+if EVAL:
+    DATA_PATH = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Eval/Speech/'
+    annotations_file_path = DATA_PATH + 'features_and_ground_truth_eval.csv'
+else:
+    DATA_PATH = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Dev/Speech/'
+    annotations_file_path = DATA_PATH + 'features_and_ground_truth_dev.csv'
+
+    
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 128
 EPOCHS = 1
-
-annotations_file_path = DATA_PATH + 'features_and_ground_truth.csv'
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
