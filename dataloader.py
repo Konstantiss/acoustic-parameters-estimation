@@ -17,7 +17,7 @@ class ACEDataset(Dataset):
         self.drr_list = data['FBDRRMean(Ch)'].tolist()
         self.rt60_list = data['FBT60Mean(Ch)'].tolist()
         self.device = device
-        self.transformation = transformation.to(device)
+        self.transformation = transformation
         self.target_sample_rate = target_sample_rate
         self.num_samples = num_samples
 
@@ -29,7 +29,7 @@ class ACEDataset(Dataset):
         drr = self.drr_list[idx]
         rt60 = self.rt60_list[idx]
         waveform, sample_rate = ta.load(audio_file_path)  # (num_channels,samples) -> (1,samples) makes the waveform mono
-        waveform = waveform.to(self.device)
+        #waveform = waveform.to(self.device)
         waveform = self._resample(waveform, sample_rate)
         waveform = self._mix_down(waveform)
         waveform = self._cut(waveform)
