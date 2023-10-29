@@ -9,28 +9,25 @@ import subprocess
 import tqdm as tqdm
 import pandas as pd
 
-device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
-
-print("Pytorch running on:", device)
-
-class Dataset(Dataset):
+class ACEDataset(Dataset):
 
     def __init__(self, annotations_file, transformation, target_sample_rate, num_samples, device):
-        self.datalist = pd.read_csv(annotations_file, usecols=['files'])
-        self.drr = pd.read_csv(annotations_file, usecols=['FBDRRMean(Ch)'])
-        self.rt60 = pd.read_csv(annotations_file, usecols=['FBT60Mean(Ch)'])
+        data = pd.read_csv(annotations_file)
+        self.path_list = data['file'].tolist()
+        self.drr_list = data['FBDRRMean(Ch)'].tolist()
+        self.rt60_list = data['FBT60Mean(Ch)'].tolist()
         self.device = device
         self.transformation = transformation.to(device)
         self.target_sample_rate = target_sample_rate
         self.num_samples = num_samples
 
     def __len__(self):
-        return len(self.datalist)
+        return len(self.path_list)
 
     def __getitem__(self, idx):
-        audio_file_path = self.datalist[idx]
-        drr = self.drr[idx]
-        rt60 = self.rt60[idx]
+        audio_file_path = self.path_list[idx]
+        drr = self.drr_list[idx]
+        rt60 = self.rt60_list[idx]
         waveform, sample_rate = ta.load(audio_file_path)  # (num_channels,samples) -> (1,samples) makes the waveform mono
         waveform = waveform.to(self.device)
         waveform = self._resample(waveform, sample_rate)
