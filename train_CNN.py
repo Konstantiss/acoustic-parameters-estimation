@@ -17,18 +17,21 @@ print("Pytorch running on:", device)
 
 
 def train_single_epoch(model, dataloader, loss_fn, optimizer, device):
-    for waveform, drr, rt60 in tqdm.tqdm(dataloader):
+    for waveform, drrs_true, rt60s_true in tqdm.tqdm(dataloader):
         waveform = waveform.to(device)
-        drr = drr.to(device)
-        rt60 = rt60.to(device)
+        drrs_true = drrs_true.to(device)
+        rt60s_true = rt60s_true.to(device)
         # calculate loss and preds
-        drr_estimate, rt60_estimate = model(waveform)
-        loss = loss_fn([drr_estimate.float(), rt60_estimate.float()], [drr.float(), rt60.float()])
+        drr_estimates, rt60_estimates = model(waveform)
+        #loss = loss_fn([drr_estimates, rt60_estimates], [drrs_true, rt60s_true])
+        loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
+        loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
+        total_loss = loss_drr + loss_rt60
         # backpropogate the loss and update the gradients
         optimizer.zero_grad()
-        loss.backward()
+        total_loss.backward()
         optimizer.step()
-    print(f"loss:{loss.item()}")
+    print(f"Loss:{total_loss.item()}")
 
 
 def train(model, dataloader, loss_fn, optimizer, device, epochs):
@@ -48,10 +51,10 @@ else:
     DATA_PATH = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Dev/Speech/'
     annotations_file_path = DATA_PATH + 'features_and_ground_truth_dev.csv'
 
-    
+
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
-BATCH_SIZE = 128
+BATCH_SIZE = 2
 EPOCHS = 1
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
