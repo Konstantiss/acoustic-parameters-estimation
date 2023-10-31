@@ -28,7 +28,7 @@ class ACEDataset(Dataset):
         audio_file_path = self.path_list[idx]
         drr = self.drr_list[idx]
         rt60 = self.rt60_list[idx]
-        waveform, sample_rate = ta.load(audio_file_path)  # (num_channels,samples) -> (1,samples) makes the waveform mono
+        waveform, sample_rate = ta.backend.soundfile_backend.load(audio_file_path)  # (num_channels,samples) -> (1,samples) makes the waveform mono
         #waveform = waveform.to(self.device)
         waveform = self._resample(waveform, sample_rate)
         waveform = self._mix_down(waveform)
