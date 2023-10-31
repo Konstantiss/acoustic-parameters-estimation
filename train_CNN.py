@@ -23,9 +23,9 @@ def train_single_epoch(model, dataloader, loss_fn, optimizer, device):
         drrs_true = drrs_true.to(device)
         rt60s_true = rt60s_true.to(device)
         # calculate loss and preds
-        predictions = model(waveform)
-        drr_estimates = predictions[:, 0]
-        rt60_estimates = predictions[:, 1]
+        drr_estimates, rt60_estimates = model(waveform)
+        # drr_estimates = predictions[:, 0]
+        # rt60_estimates = predictions[:, 1]
         loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
         loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
         total_loss = loss_drr + loss_rt60
@@ -56,7 +56,7 @@ else:
 
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
-BATCH_SIZE = 1024
+BATCH_SIZE = 128
 EPOCHS = 1
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
@@ -64,6 +64,6 @@ dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMP
 train_dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 model = CNNNetwork().cuda()
 loss_fn = pt.nn.MSELoss()
-optimizer = pt.optim.SGD(model.parameters(), lr=10e-3, momentum=0.9)
+optimizer = pt.optim.SGD(model.parameters(), lr=10e-9, momentum=0.9)
 
 train(model, train_dataloader, loss_fn, optimizer, device, EPOCHS)
