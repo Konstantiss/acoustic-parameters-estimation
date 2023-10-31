@@ -1,13 +1,5 @@
-import torch as pt
 from torch import nn
-import torchaudio as ta
 from torchsummary import summary
-from torch.utils.data import Dataset, DataLoader
-import numpy as numpy
-import os
-import subprocess
-import tqdm as tqdm
-import pandas as pd
 
 class CNNNetwork(nn.Module):
 
@@ -44,9 +36,10 @@ class CNNNetwork(nn.Module):
         x = self.conv4(x)
         x = self.flatten(x)
         x = self.linear1(x)
-        output = self.linear2(x)
-
-        return output
+        x = self.linear2(x)
+        output1 = x[:, 0]
+        output2 = abs(x[:, 1])
+        return output1, output2
 
 
 model = CNNNetwork().cuda()
