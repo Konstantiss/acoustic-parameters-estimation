@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as numpy
 import os
 import subprocess
-import tqdm as tqdm
+from tqdm import tqdm
 import pandas as pd
 from dataloader import *
 from CNN import *
@@ -16,32 +16,28 @@ device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
 
 print("Pytorch running on:", device)
 
-
-def train_single_epoch(model, dataloader, loss_fn, optimizer, device):
-    for waveform, drrs_true, rt60s_true in tqdm.tqdm(dataloader):
-        waveform = waveform.to(device)
-        drrs_true = drrs_true.to(device)
-        rt60s_true = rt60s_true.to(device)
-        # calculate loss and preds
-        drr_estimates, rt60_estimates = model(waveform)
-        # drr_estimates = predictions[:, 0]
-        # rt60_estimates = predictions[:, 1]
-        loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
-        loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
-        total_loss = loss_drr + loss_rt60
-        # backpropogate the loss and update the gradients
-        optimizer.zero_grad()
-        total_loss.backward()
-        optimizer.step()
-        print(f"Loss:{total_loss.item()}")
-
-
 def train(model, dataloader, loss_fn, optimizer, device, epochs):
-    for i in tqdm.tqdm(range(epochs)):
-        print(f"epoch:{i + 1}")
-        train_single_epoch(model, dataloader, loss_fn, optimizer, device)
-        print('-------------------------------------------')
-    print('Finished Training')
+    for epoch in range(EPOCHS):
+        print("Learning rate: ", optimizer.param_groups[0]['lr'])
+        with tqdm.tqdm(train_dataloader, unit="batch", total=len(train_dataloader)) as tepoch:
+            for waveform, drrs_true, rt60s_true in tepoch:
+                tepoch.set_description(f"Epoch {epoch}")
+                waveform = waveform.to(device)
+                drrs_true = drrs_true.to(device)
+                rt60s_true = rt60s_true.to(device)
+                # calculate loss and preds
+                drr_estimates, rt60_estimates = model(waveform)
+                loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
+                loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
+                total_loss = loss_drr + loss_rt60
+                # backpropogate the loss and update the gradients
+                optimizer.zero_grad()
+                total_loss.backward()
+                optimizer.step()
+                tepoch.set_postfix(loss=total_loss.item())
+                # print(f"Loss:{total_loss.item()}")
+                # print('-------------------------------------------')
+            print('Finished Training')
 
 
 EVAL = True
