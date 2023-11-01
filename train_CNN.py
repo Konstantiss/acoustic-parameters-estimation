@@ -12,6 +12,8 @@ from tqdm import tqdm
 import pandas as pd
 from dataloader import *
 from CNN import *
+import time
+import matplotlib.pyplot as plt
 
 device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
 
@@ -19,8 +21,6 @@ print("Pytorch running on:", device)
 
 
 def train(model, dataloader, loss_fn, optimizer, device, epochs):
-    mean_loss_per_epoch_drr = []
-    mean_loss_per_epoch_rt60 = []
     for epoch in range(EPOCHS):
         losses_per_epoch_drr = []
         losses_per_epoch_rt60 = []
@@ -44,7 +44,7 @@ def train(model, dataloader, loss_fn, optimizer, device, epochs):
                 optimizer.step()
                 tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
                 # print(f"Loss:{total_loss.item()}")
-        mean_loss_per_epoch_drr.append(sum(losses_per_epoch_drr)/len(losses_per_epoch_drr))
+        mean_loss_per_epoch_drr.append(sum(losses_per_epoch_drr) / len(losses_per_epoch_drr))
         mean_loss_per_epoch_rt60.append(sum(losses_per_epoch_rt60) / len(losses_per_epoch_rt60))
     print("Mean loss per epoch DRR:", mean_loss_per_epoch_drr)
     print("Mean loss per epoch RT60:", mean_loss_per_epoch_rt60)
@@ -62,7 +62,7 @@ else:
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 512
-EPOCHS = 1
+EPOCHS = 5
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
@@ -71,4 +71,17 @@ model = CNNNetwork().cuda()
 loss_fn = pt.nn.MSELoss()
 optimizer = pt.optim.SGD(model.parameters(), lr=10e-7, momentum=0.9)
 
+start_time = time.time()
+mean_loss_per_epoch_drr = []
+mean_loss_per_epoch_rt60 = []
 train(model, train_dataloader, loss_fn, optimizer, device, EPOCHS)
+print('Total execution time: {:.4f} minutes', format((time.time() - start_time) / 60))
+
+plt.figure(figsize=(10, 5))
+plt.title("DRR and RT60 estimation loss per epoch")
+plt.plot(mean_loss_per_epoch_drr, label="val")
+plt.plot(mean_loss_per_epoch_rt60, label="train")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.legend()
+plt.show()
