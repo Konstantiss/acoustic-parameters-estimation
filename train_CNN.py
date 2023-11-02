@@ -62,7 +62,7 @@ else:
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 512
-EPOCHS = 5
+EPOCHS = 10
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
@@ -79,8 +79,8 @@ print('Total execution time: {:.4f} minutes', format((time.time() - start_time) 
 
 plt.figure(figsize=(10, 5))
 plt.title("DRR and RT60 estimation loss per epoch")
-plt.plot(mean_loss_per_epoch_drr, label="val")
-plt.plot(mean_loss_per_epoch_rt60, label="train")
+plt.plot(mean_loss_per_epoch_drr, label="drr")
+plt.plot(mean_loss_per_epoch_rt60, label="rt60")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.legend()
