@@ -1,5 +1,4 @@
 import torch
-import torch as pt
 from torch import nn
 import torchaudio as ta
 from torchsummary import summary
@@ -74,7 +73,11 @@ optimizer = pt.optim.Adam(model.parameters(), lr=10e-4)
 start_time = time.time()
 mean_loss_per_epoch_drr = []
 mean_loss_per_epoch_rt60 = []
+
 train(model, train_dataloader, loss_fn, optimizer, device, EPOCHS)
+
+torch.save(model.state_dict(), 'cnn-save.bin')
+
 print('Total execution time: {:.4f} minutes', format((time.time() - start_time) / 60))
 print("Mean loss per epoch DRR:", mean_loss_per_epoch_drr)
 print("Mean loss per epoch RT60:", mean_loss_per_epoch_rt60)
