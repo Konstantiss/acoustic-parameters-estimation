@@ -43,7 +43,8 @@ def train(model, dataloader, loss_fn, optimizer, device, epochs):
                 loss_rt60.backward()
                 optimizer.step()
                 tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
-                # print(f"Loss:{total_loss.item()}")
+        print(f"Mean DRR loss for epoch {epoch + 1}:", sum(losses_per_epoch_drr) / len(losses_per_epoch_drr))
+        print(f"Mean RT60 loss for epoch {epoch + 1}:", sum(losses_per_epoch_rt60) / len(losses_per_epoch_rt60))
         mean_loss_per_epoch_drr.append(sum(losses_per_epoch_drr) / len(losses_per_epoch_drr))
         mean_loss_per_epoch_rt60.append(sum(losses_per_epoch_rt60) / len(losses_per_epoch_rt60))
 
