@@ -35,8 +35,8 @@ def train(model, dataloader, loss_fn, optimizer, device, epochs):
                 drr_estimates, rt60_estimates = model(waveform)
                 loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
                 loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
-                losses_per_epoch_drr.append(loss_drr)
-                losses_per_epoch_rt60.append(loss_rt60)
+                losses_per_epoch_drr.append(loss_drr.item())
+                losses_per_epoch_rt60.append(loss_rt60.item())
                 # backpropogate the losses and update the gradients
                 optimizer.zero_grad()
                 loss_drr.backward(retain_graph=True)
@@ -46,8 +46,6 @@ def train(model, dataloader, loss_fn, optimizer, device, epochs):
                 # print(f"Loss:{total_loss.item()}")
         mean_loss_per_epoch_drr.append(sum(losses_per_epoch_drr) / len(losses_per_epoch_drr))
         mean_loss_per_epoch_rt60.append(sum(losses_per_epoch_rt60) / len(losses_per_epoch_rt60))
-    print("Mean loss per epoch DRR:", mean_loss_per_epoch_drr)
-    print("Mean loss per epoch RT60:", mean_loss_per_epoch_rt60)
 
 
 EVAL = True
@@ -61,26 +59,29 @@ else:
 
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
-BATCH_SIZE = 512
-EPOCHS = 10
+BATCH_SIZE = 128
+EPOCHS = 3
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
 train_dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 model = CNNNetwork().cuda()
 loss_fn = pt.nn.MSELoss()
-optimizer = pt.optim.SGD(model.parameters(), lr=10e-7, momentum=0.9)
+# optimizer = pt.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
+optimizer = pt.optim.Adam(model.parameters(), lr=10e-4)
 
 start_time = time.time()
 mean_loss_per_epoch_drr = []
 mean_loss_per_epoch_rt60 = []
 train(model, train_dataloader, loss_fn, optimizer, device, EPOCHS)
 print('Total execution time: {:.4f} minutes', format((time.time() - start_time) / 60))
+print("Mean loss per epoch DRR:", mean_loss_per_epoch_drr)
+print("Mean loss per epoch RT60:", mean_loss_per_epoch_rt60)
 
 plt.figure(figsize=(10, 5))
 plt.title("DRR and RT60 estimation loss per epoch")
-plt.plot(mean_loss_per_epoch_drr, label="drr")
-plt.plot(mean_loss_per_epoch_rt60, label="rt60")
+plt.plot(mean_loss_per_epoch_drr, linestyle='-bo', label="drr")
+plt.plot(mean_loss_per_epoch_rt60, linestyle='-bo', label="rt60")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.legend()
