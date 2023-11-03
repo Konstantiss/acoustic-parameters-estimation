@@ -7,6 +7,8 @@ import numpy as numpy
 import os
 import subprocess
 from torcheval.metrics import R2Score
+import datetime
+import pickle
 from tqdm import tqdm
 import pandas as pd
 from dataloader import *
@@ -17,7 +19,6 @@ import matplotlib.pyplot as plt
 device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
 
 print("Pytorch running on:", device)
-
 
 def train(model, dataloader, loss_fn, optimizer, device, epochs):
     for epoch in range(EPOCHS):
@@ -48,6 +49,7 @@ def train(model, dataloader, loss_fn, optimizer, device, epochs):
         mean_loss_per_epoch_rt60.append(sum(losses_per_epoch_rt60) / len(losses_per_epoch_rt60))
 
 
+
 EVAL = True
 
 if EVAL:
@@ -60,27 +62,40 @@ else:
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 128
-EPOCHS = 3
+EPOCHS = 1
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
 train_dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 model = CNNNetwork().cuda()
+model.load_state_dict(torch.load('cnn-save.bin'))
+
 loss_fn = pt.nn.MSELoss()
 # optimizer = pt.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
 optimizer = pt.optim.Adam(model.parameters(), lr=10e-4)
-
 start_time = time.time()
 mean_loss_per_epoch_drr = []
 mean_loss_per_epoch_rt60 = []
-
 train(model, train_dataloader, loss_fn, optimizer, device, EPOCHS)
 
-torch.save(model.state_dict(), 'cnn-save.bin')
+model_save_filename = 'cnn-save' + str(datetime.datetime.now()) + '.bin'
+
+torch.save(model.state_dict(), model_save_filename)
+
+results = {
+    "model": model.__class__.__name__,
+    "loss_drr": mean_loss_per_epoch_drr,
+    "loss_rt60": mean_loss_per_epoch_rt60,
+    "datetime": datetime.datetime.now()
+}
 
 print('Total execution time: {:.4f} minutes', format((time.time() - start_time) / 60))
 print("Mean loss per epoch DRR:", mean_loss_per_epoch_drr)
 print("Mean loss per epoch RT60:", mean_loss_per_epoch_rt60)
+
+results_filename = 'results-' + str(datetime.datetime.now()) + '.pkl'
+with open(results_filename, 'wb') as handle:
+    pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 plt.figure(figsize=(10, 5))
 plt.title("DRR and RT60 estimation loss per epoch")
