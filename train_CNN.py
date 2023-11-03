@@ -68,7 +68,7 @@ melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024
 dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
 train_dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 model = CNNNetwork().cuda()
-model.load_state_dict(torch.load('cnn-save.bin'))
+#model.load_state_dict(torch.load('cnn-save.bin'))
 
 loss_fn = pt.nn.MSELoss()
 # optimizer = pt.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
@@ -77,8 +77,8 @@ start_time = time.time()
 mean_loss_per_epoch_drr = []
 mean_loss_per_epoch_rt60 = []
 train(model, train_dataloader, loss_fn, optimizer, device, EPOCHS)
-
-model_save_filename = 'cnn-save' + str(datetime.datetime.now()) + '.bin'
+date_time = str(datetime.datetime.now())
+model_save_filename = 'cnn-save' + date_time + '.bin'
 
 torch.save(model.state_dict(), model_save_filename)
 
@@ -93,10 +93,11 @@ print('Total execution time: {:.4f} minutes', format((time.time() - start_time) 
 print("Mean loss per epoch DRR:", mean_loss_per_epoch_drr)
 print("Mean loss per epoch RT60:", mean_loss_per_epoch_rt60)
 
-results_filename = 'results-' + str(datetime.datetime.now()) + '.pkl'
+results_filename = 'results-' + date_time + '.pkl'
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+plot_filename = 'figs/loss-plot-' + date_time + '.png'
 plt.figure(figsize=(10, 5))
 plt.title("DRR and RT60 estimation loss per epoch")
 plt.plot(mean_loss_per_epoch_drr, linestyle='solid', marker='o', label="drr")
@@ -104,4 +105,5 @@ plt.plot(mean_loss_per_epoch_rt60, linestyle='solid', marker='o', label="rt60")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.legend()
+plt.savefig(plot_filename)
 plt.show()
