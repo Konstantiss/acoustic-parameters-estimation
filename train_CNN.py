@@ -20,6 +20,7 @@ device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
 
 print("Pytorch running on:", device)
 
+
 def train(model, train_dataloader, eval_dataloader, loss_fn, optimizer, device, epochs):
     model = model.train()
     for epoch in range(EPOCHS):
@@ -78,7 +79,6 @@ def train(model, train_dataloader, eval_dataloader, loss_fn, optimizer, device, 
         mean_loss_per_epoch_eval_rt60.append(sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
 
 
-
 DATA_PATH_TRAIN = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Train/Speech/'
 annotations_file_path_train = DATA_PATH_TRAIN + 'features_and_ground_truth_train.csv'
 
@@ -88,7 +88,7 @@ annotations_file_path_eval = DATA_PATH_EVAL + 'features_and_ground_truth_eval.cs
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 256
-EPOCHS = 1
+EPOCHS = 5
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 train_dataset = ACEDataset(annotations_file_path_train, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
@@ -96,7 +96,7 @@ train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True
 eval_dataset = ACEDataset(annotations_file_path_eval, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
 eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE, shuffle=True)
 model = CNNNetwork().cuda()
-model.load_state_dict(torch.load('cnn-save2023-11-03 17:48:40.414314.bin'))
+# model.load_state_dict(torch.load('cnn-save2023-11-03 17:48:40.414314.bin'))
 
 loss_fn = pt.nn.MSELoss()
 # optimizer = pt.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
@@ -127,7 +127,7 @@ print('Total execution time: {:.4f} minutes', format((time.time() - start_time) 
 print("Mean training loss per epoch DRR:", mean_loss_per_epoch_train_drr)
 print("Mean training loss per epoch RT60:", mean_loss_per_epoch_train_rt60)
 print("Mean evaluation loss per epoch DRR:", mean_loss_per_epoch_eval_drr)
-print("Mean training loss per epoch RT60:", mean_loss_per_epoch_eval_rt60)
+print("Mean evaluation loss per epoch RT60:", mean_loss_per_epoch_eval_rt60)
 
 results_filename = 'results-' + date_time + '.pkl'
 with open(results_filename, 'wb') as handle:
@@ -144,7 +144,6 @@ plt.ylim(0, 1)
 plt.legend()
 plt.savefig(plot_filename)
 plt.show()
-
 
 plot_filename = 'figs/loss-plot-eval-' + date_time + '.png'
 plt.figure(figsize=(10, 5))
