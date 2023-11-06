@@ -22,8 +22,8 @@ print('Model:', objects[0]['model'])
 print('Number of epochs:', num_epochs)
 print('DRR train loss per epoch:', mean_loss_per_epoch_train_drr)
 print('RT60 train loss per epoch:', mean_loss_per_epoch_train_rt60)
-print('DRR eval loss per epoch:', mean_loss_per_epoch_eval_drr)
-print('RT60 eval loss per epoch:', mean_loss_per_epoch_eval_rt60)
+print('DRR evaluation loss per epoch:', mean_loss_per_epoch_eval_drr)
+print('RT60 evaluation loss per epoch:', mean_loss_per_epoch_eval_rt60)
 print('Date and time:', objects[0]['datetime'])
 
 PLOT = True
