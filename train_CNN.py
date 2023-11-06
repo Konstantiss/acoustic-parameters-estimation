@@ -81,37 +81,36 @@ def train(model, train_dataloader, eval_dataloader, loss_fn, optimizer, device, 
         mean_loss_per_epoch_train_rt60.append(sum(losses_per_epoch_train_rt60) / len(losses_per_epoch_train_rt60))
 
         print("---- Evaluation ---\n")
-        if EVAL:
-            model = model.eval()
-            losses_per_epoch_eval_drr = []
-            losses_per_epoch_eval_rt60 = []
-            with tqdm.tqdm(train_dataloader, unit="batch", total=len(train_dataloader)) as tepoch:
-                for waveform, drrs_true, rt60s_true in tepoch:
-                    tepoch.set_description(f"Epoch {epoch + 1}")
-                    waveform = waveform.to(device)
-                    drrs_true = drrs_true.to(device)
-                    rt60s_true = rt60s_true.to(device)
-                    # calculate loss and preds
-                    drr_estimates, rt60_estimates = model(waveform)
-                    loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
-                    loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
-                    losses_per_epoch_eval_drr.append(loss_drr.item())
-                    losses_per_epoch_eval_rt60.append(loss_rt60.item())
-                    # backpropogate the losses and update the gradients
-                    optimizer.zero_grad()
-                    loss_drr.backward(retain_graph=True)
-                    loss_rt60.backward()
-                    optimizer.step()
-                    tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
-            print(f"Mean DRR evaluation loss for epoch {epoch + 1}:",
-                  sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr))
-            print(f"Mean RT60 evaluation loss for epoch {epoch + 1}:",
-                  sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
-            mean_loss_per_epoch_eval_drr.append(sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr))
-            mean_loss_per_epoch_eval_rt60.append(sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
+
+        model = model.eval()
+        losses_per_epoch_eval_drr = []
+        losses_per_epoch_eval_rt60 = []
+        with tqdm.tqdm(train_dataloader, unit="batch", total=len(train_dataloader)) as tepoch:
+            for waveform, drrs_true, rt60s_true in tepoch:
+                tepoch.set_description(f"Epoch {epoch + 1}")
+                waveform = waveform.to(device)
+                drrs_true = drrs_true.to(device)
+                rt60s_true = rt60s_true.to(device)
+                # calculate loss and preds
+                drr_estimates, rt60_estimates = model(waveform)
+                loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
+                loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
+                losses_per_epoch_eval_drr.append(loss_drr.item())
+                losses_per_epoch_eval_rt60.append(loss_rt60.item())
+                # backpropogate the losses and update the gradients
+                optimizer.zero_grad()
+                loss_drr.backward(retain_graph=True)
+                loss_rt60.backward()
+                optimizer.step()
+                tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
+        print(f"Mean DRR evaluation loss for epoch {epoch + 1}:",
+              sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr))
+        print(f"Mean RT60 evaluation loss for epoch {epoch + 1}:",
+              sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
+        mean_loss_per_epoch_eval_drr.append(sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr))
+        mean_loss_per_epoch_eval_rt60.append(sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
 
 
-EVAL = True
 
 DATA_PATH_TRAIN = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Train/Speech/'
 annotations_file_path_train = DATA_PATH_TRAIN + 'features_and_ground_truth_train.csv'
@@ -179,15 +178,15 @@ plt.legend()
 plt.savefig(plot_filename)
 plt.show()
 
-if EVAL:
-    plot_filename = 'figs/loss-plot-eval-' + date_time + '.png'
-    plt.figure(figsize=(10, 5))
-    plt.title("DRR and RT60 evalutaion loss per epoch")
-    plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
-    plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.ylim(0, 1)
-    plt.legend()
-    plt.savefig(plot_filename)
-    plt.show()
+
+plot_filename = 'figs/loss-plot-eval-' + date_time + '.png'
+plt.figure(figsize=(10, 5))
+plt.title("DRR and RT60 evaluation loss per epoch")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.ylim(0, 1)
+plt.legend()
+plt.savefig(plot_filename)
+plt.show()
