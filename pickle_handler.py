@@ -16,6 +16,7 @@ mean_loss_per_epoch_drr = objects[0]['loss_drr']
 mean_loss_per_epoch_rt60 = objects[0]['loss_rt60']
 
 print('Model:', objects[0]['model'])
+print('Number of epochs:', len(mean_loss_per_epoch_drr))
 print('DRR loss per epoch:', objects[0]['loss_drr'])
 print('RT60 loss per epoch:', objects[0]['loss_rt60'])
 print('Date and time:', objects[0]['datetime'])
@@ -30,7 +31,7 @@ if PLOT:
     plt.plot(mean_loss_per_epoch_rt60, linestyle='solid', marker='o', label="rt60")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
-    plt.ylim(0, 10)
+    plt.ylim(0, 1)
     plt.legend()
     plt.savefig(plot_filename)
     plt.show()
