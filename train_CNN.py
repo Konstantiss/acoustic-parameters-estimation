@@ -110,7 +110,7 @@ train(model=model, train_dataloader=train_dataloader, eval_dataloader=eval_datal
       optimizer=optimizer,
       device=device, epochs=EPOCHS)
 date_time = str(datetime.datetime.now())
-model_save_filename = 'cnn-save' + date_time + '.bin'
+model_save_filename = 'cnn-save' + date_time + '-' + str(EPOCHS) + '.bin'
 
 torch.save(model.state_dict(), model_save_filename)
 
@@ -129,7 +129,7 @@ print("Mean training loss per epoch RT60:", mean_loss_per_epoch_train_rt60)
 print("Mean evaluation loss per epoch DRR:", mean_loss_per_epoch_eval_drr)
 print("Mean evaluation loss per epoch RT60:", mean_loss_per_epoch_eval_rt60)
 
-results_filename = 'results-' + date_time + '.pkl'
+results_filename = 'results-' + date_time + '-' + str(EPOCHS) + '.pkl'
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
