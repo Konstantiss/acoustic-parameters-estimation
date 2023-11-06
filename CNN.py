@@ -38,7 +38,7 @@ class CNNNetwork(nn.Module):
         x = self.linear1(x)
         x = self.linear2(x)
         output1 = x[:, 0]
-        output2 = abs(x[:, 1])
+        output2 = x[:, 1]
         return output1, output2
 
 
