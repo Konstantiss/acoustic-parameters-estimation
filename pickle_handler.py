@@ -29,7 +29,7 @@ print('Date and time:', pkl_contents[0]['datetime'])
 PLOT = True
 
 if PLOT:
-    plot_filename = 'figs/loss-plot-train-' + str(pkl_contents[0]['datetime']) + '.png'
+    plot_filename = 'figs/loss-plot-train-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
     plt.figure(figsize=(10, 5))
     plt.title("DRR and RT60 training loss per epoch")
     plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="drr")
@@ -42,7 +42,7 @@ if PLOT:
     plt.savefig(plot_filename)
     plt.show()
 
-    plot_filename = 'figs/loss-plot-eval-' + str(pkl_contents[0]['datetime']) + '.png'
+    plot_filename = 'figs/loss-plot-eval-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
     plt.figure(figsize=(10, 5))
     plt.title("DRR and RT60 evaluation loss per epoch")
     plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")

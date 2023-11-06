@@ -133,7 +133,7 @@ results_filename = 'results-' + date_time + '.pkl'
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-plot_filename = 'figs/loss-plot-train-' + date_time + '.png'
+plot_filename = 'figs/loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
 plt.figure(figsize=(10, 5))
 plt.title("DRR and RT60 training loss per epoch")
 plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="drr")
@@ -145,7 +145,7 @@ plt.legend()
 plt.savefig(plot_filename)
 plt.show()
 
-plot_filename = 'figs/loss-plot-eval-' + date_time + '.png'
+plot_filename = 'figs/loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
 plt.figure(figsize=(10, 5))
 plt.title("DRR and RT60 evaluation loss per epoch")
 plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
