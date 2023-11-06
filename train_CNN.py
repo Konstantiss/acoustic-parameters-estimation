@@ -61,8 +61,8 @@ else:
 
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
-BATCH_SIZE = 128
-EPOCHS = 1
+BATCH_SIZE = 512
+EPOCHS = 5
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 dataset = ACEDataset(annotations_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
@@ -100,10 +100,11 @@ with open(results_filename, 'wb') as handle:
 plot_filename = 'figs/loss-plot-' + date_time + '.png'
 plt.figure(figsize=(10, 5))
 plt.title("DRR and RT60 estimation loss per epoch")
-plt.plot(mean_loss_per_epoch_drr, linestyle='solid', marker='o', label="drr")
-plt.plot(mean_loss_per_epoch_rt60, linestyle='solid', marker='o', label="rt60")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_drr, linestyle='solid', marker='o', label="drr")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_rt60, linestyle='solid', marker='o', label="rt60")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
+plt.ylim(0, 1)
 plt.legend()
 plt.savefig(plot_filename)
 plt.show()
