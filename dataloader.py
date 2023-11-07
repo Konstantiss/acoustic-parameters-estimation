@@ -8,7 +8,11 @@ import numpy as numpy
 import os
 import subprocess
 import tqdm as tqdm
+import matplotlib.pyplot as plt
 import pandas as pd
+
+PLOT_IMAGES = False
+
 
 class ACEDataset(Dataset):
 
@@ -16,10 +20,10 @@ class ACEDataset(Dataset):
         data = pd.read_csv(annotations_file)
         scaler = MinMaxScaler()
         self.path_list = data['file'].tolist()
-        #self.drr_list = data['FBDRRMean(Ch)'].tolist()
+        # self.drr_list = data['FBDRRMean(Ch)'].tolist()
         self.drr_list = data['FBDRRMean(Ch)'].values.reshape(-1, 1)
         self.drr_list = scaler.fit_transform(self.drr_list)
-        #self.rt60_list = data['FBT60Mean(Ch)'].tolist()
+        # self.rt60_list = data['FBT60Mean(Ch)'].tolist()
         self.rt60_list = data['FBT60Mean(Ch)'].values.reshape(-1, 1)
         self.rt60_list = scaler.fit_transform(self.rt60_list)
         self.device = device
@@ -34,13 +38,17 @@ class ACEDataset(Dataset):
         audio_file_path = self.path_list[idx]
         drr = self.drr_list[idx]
         rt60 = self.rt60_list[idx]
-        waveform, sample_rate = ta.backend.soundfile_backend.load(audio_file_path)  # (num_channels,samples) -> (1,samples) makes the waveform mono
-        #waveform = waveform.to(self.device)
+        waveform, sample_rate = ta.backend.soundfile_backend.load(
+            audio_file_path)  # (num_channels,samples) -> (1,samples) makes the waveform mono
         waveform = self._resample(waveform, sample_rate)
         waveform = self._mix_down(waveform)
         waveform = self._cut(waveform)
         waveform = self._right_pad(waveform)
         waveform = self.transformation(waveform)
+        if PLOT_IMAGES:
+            plt.figure()
+            plt.imshow(waveform[0, :, :].numpy())
+            plt.show()
         return waveform, float(drr), float(rt60)
 
     def _resample(self, waveform, sample_rate):
