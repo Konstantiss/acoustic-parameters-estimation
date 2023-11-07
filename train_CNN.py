@@ -11,12 +11,13 @@ import datetime
 import pickle
 from tqdm import tqdm
 import pandas as pd
+from train_and_evaluate_model import *
 from dataloader import *
 from CNN import *
 import time
 import matplotlib.pyplot as plt
 
-device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 print("Pytorch running on:", device)
 
@@ -98,17 +99,16 @@ eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE, shuffle=True)
 model = CNNNetwork().cuda()
 # model.load_state_dict(torch.load('cnn-save2023-11-03 17:48:40.414314.bin'))
 
-loss_fn = pt.nn.MSELoss()
-# optimizer = pt.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
-optimizer = pt.optim.Adam(model.parameters(), lr=10e-4)
+loss_fn = torch.nn.MSELoss()
+# optimizer = torch.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
+optimizer = torch.optim.Adam(model.parameters(), lr=10e-4)
 start_time = time.time()
-mean_loss_per_epoch_train_drr = []
-mean_loss_per_epoch_train_rt60 = []
-mean_loss_per_epoch_eval_drr = []
-mean_loss_per_epoch_eval_rt60 = []
-train(model=model, train_dataloader=train_dataloader, eval_dataloader=eval_dataloader, loss_fn=loss_fn,
-      optimizer=optimizer,
-      device=device, epochs=EPOCHS)
+mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, \
+mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60 = train_evaluate(
+    model=model, train_dataloader=train_dataloader, eval_dataloader=eval_dataloader, loss_fn=loss_fn,
+    optimizer=optimizer,
+    device=device, epochs=EPOCHS)
+
 date_time = str(datetime.datetime.now())
 model_save_filename = 'cnn-save' + date_time + '-' + str(EPOCHS) + '.bin'
 
