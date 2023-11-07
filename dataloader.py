@@ -16,7 +16,8 @@ PLOT_IMAGES = False
 
 class ACEDataset(Dataset):
 
-    def __init__(self, annotations_file, transformation, target_sample_rate, num_samples, device):
+    def __init__(self, annotations_file, transformation, target_sample_rate, num_samples, device, resnet=False,
+                 image_transformation=None):
         data = pd.read_csv(annotations_file)
         scaler = MinMaxScaler()
         self.path_list = data['file'].tolist()
@@ -30,6 +31,9 @@ class ACEDataset(Dataset):
         self.transformation = transformation
         self.target_sample_rate = target_sample_rate
         self.num_samples = num_samples
+        self.resnet = resnet
+        if image_transformation:
+            self.image_transformation = image_transformation
 
     def __len__(self):
         return len(self.path_list)
@@ -49,6 +53,8 @@ class ACEDataset(Dataset):
             plt.figure()
             plt.imshow(waveform[0, :, :].numpy())
             plt.show()
+        if self.resnet:
+            waveform = self.image_transformation(waveform)
         return waveform, float(drr), float(rt60)
 
     def _resample(self, waveform, sample_rate):
