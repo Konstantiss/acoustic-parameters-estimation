@@ -71,7 +71,12 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
                 drrs_true = drrs_true.to(device)
                 rt60s_true = rt60s_true.to(device)
                 # calculate loss and preds
-                drr_estimates, rt60_estimates = model(waveform)
+                if model.__class__.__name__ == 'CNNNetwork':
+                    drr_estimates, rt60_estimates = model(waveform)
+                else:
+                    estimates = model(waveform)
+                    drr_estimates = estimates[:, 0]
+                    rt60_estimates = estimates[:, 1]
                 loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
                 loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
                 losses_per_epoch_eval_drr.append(loss_drr.item())
