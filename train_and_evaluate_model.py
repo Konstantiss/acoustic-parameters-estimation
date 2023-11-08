@@ -8,6 +8,7 @@ import os
 import subprocess
 from torcheval.metrics import R2Score
 import datetime
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pickle
 from tqdm import tqdm
 import pandas as pd
@@ -22,6 +23,7 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
     mean_loss_per_epoch_train_rt60 = []
     mean_loss_per_epoch_eval_drr = []
     mean_loss_per_epoch_eval_rt60 = []
+    scheduler = ReduceLROnPlateau(optimizer=optimizer, mode='min', patience=1)
     model = model.to(device)
     model = model.train()
     for epoch in range(epochs):
@@ -88,5 +90,6 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
               sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
         mean_loss_per_epoch_eval_drr.append(sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr))
         mean_loss_per_epoch_eval_rt60.append(sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
+        scheduler.step(sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
 
     return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
