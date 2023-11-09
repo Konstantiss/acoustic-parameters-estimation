@@ -2,6 +2,7 @@ import torch
 from torch import nn
 import torchaudio as ta
 from torchsummary import summary
+from pytorchtools import EarlyS
 from torch.utils.data import Dataset, DataLoader
 import numpy as numpy
 import os
@@ -16,6 +17,8 @@ from dataloader import *
 from CNN import *
 import time
 import matplotlib.pyplot as plt
+
+EARLY_STOPPING_PATIENCE = 20
 
 
 def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer, device, epochs):
@@ -54,16 +57,22 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
                 loss_rt60.backward()
                 optimizer.step()
                 tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
+        current_epoch_loss_train_drr = sum(losses_per_epoch_train_drr) / len(losses_per_epoch_train_drr)
+        current_epoch_loss_train_rt60 = sum(losses_per_epoch_train_rt60) / len(losses_per_epoch_train_rt60)
         print(f"Mean DRR training loss for epoch {epoch + 1}:",
-              sum(losses_per_epoch_train_drr) / len(losses_per_epoch_train_drr))
+              current_epoch_loss_train_drr)
         print(f"Mean RT60 training loss for epoch {epoch + 1}:",
-              sum(losses_per_epoch_train_rt60) / len(losses_per_epoch_train_rt60))
-        mean_loss_per_epoch_train_drr.append(sum(losses_per_epoch_train_drr) / len(losses_per_epoch_train_drr))
-        mean_loss_per_epoch_train_rt60.append(sum(losses_per_epoch_train_rt60) / len(losses_per_epoch_train_rt60))
+              current_epoch_loss_train_rt60)
+        mean_loss_per_epoch_train_drr.append(current_epoch_loss_train_drr)
+        mean_loss_per_epoch_train_rt60.append(current_epoch_loss_train_rt60)
 
         print("---- Evaluation ---\n")
 
         model = model.eval()
+        # Early stopping parameters
+        last_loss_drr = 100
+        last_loss_rt60 = 100
+        early_stopping_trigger_times = 0
         losses_per_epoch_eval_drr = []
         losses_per_epoch_eval_rt60 = []
         with tqdm.tqdm(eval_dataloader, unit="batch", total=len(eval_dataloader)) as tepoch:
@@ -84,12 +93,26 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
                 losses_per_epoch_eval_drr.append(loss_drr.item())
                 losses_per_epoch_eval_rt60.append(loss_rt60.item())
                 tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
+        current_epoch_loss_eval_drr = sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr)
+        current_epoch_loss_eval_rt60 = sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60)
         print(f"Mean DRR evaluation loss for epoch {epoch + 1}:",
-              sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr))
+              current_epoch_loss_eval_drr)
         print(f"Mean RT60 evaluation loss for epoch {epoch + 1}:",
-              sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
-        mean_loss_per_epoch_eval_drr.append(sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr))
-        mean_loss_per_epoch_eval_rt60.append(sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
-        scheduler.step(sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60))
+              current_epoch_loss_eval_rt60)
+        # Early stopping
+        if current_epoch_loss_eval_drr > last_loss_drr or current_epoch_loss_eval_rt60 > last_loss_rt60:
+            early_stopping_trigger_times += 1
+            print("Trigger times: ", early_stopping_trigger_times)
+
+            if early_stopping_trigger_times > EARLY_STOPPING_PATIENCE:
+                print("Early Stopping!")
+                return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
+        else:
+            early_stopping_trigger_times = 0
+            print("Trigger times: ", early_stopping_trigger_times)
+        
+        mean_loss_per_epoch_eval_drr.append(current_epoch_loss_eval_drr)
+        mean_loss_per_epoch_eval_rt60.append(current_epoch_loss_eval_rt60)
+        scheduler.step(current_epoch_loss_eval_rt60)
 
     return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
