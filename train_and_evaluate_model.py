@@ -2,7 +2,6 @@ import torch
 from torch import nn
 import torchaudio as ta
 from torchsummary import summary
-from pytorchtools import EarlyS
 from torch.utils.data import Dataset, DataLoader
 import numpy as numpy
 import os
@@ -110,7 +109,7 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
         else:
             early_stopping_trigger_times = 0
             print("Trigger times: ", early_stopping_trigger_times)
-        
+
         mean_loss_per_epoch_eval_drr.append(current_epoch_loss_eval_drr)
         mean_loss_per_epoch_eval_rt60.append(current_epoch_loss_eval_rt60)
         scheduler.step(current_epoch_loss_eval_rt60)
