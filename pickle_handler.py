@@ -13,8 +13,13 @@ with (open(pickle_file_path, "rb")) as openfile:
 
 mean_loss_per_epoch_train_drr = pkl_contents[0]['train_loss_drr']
 mean_loss_per_epoch_train_rt60 = pkl_contents[0]['train_loss_rt60']
+mean_r2_per_epoch_train_drr = pkl_contents[0]['train_r2_drr']
+mean_r2_per_epoch_train_rt60 = pkl_contents[0]['train_r2_rt60']
 mean_loss_per_epoch_eval_drr = pkl_contents[0]['eval_loss_drr']
 mean_loss_per_epoch_eval_rt60 = pkl_contents[0]['eval_loss_rt60']
+mean_r2_per_epoch_eval_drr = pkl_contents[0]['eval_r2_drr']
+mean_r2_per_epoch_eval_rt60 = pkl_contents[0]['eval_r2_rt60']
+
 num_epochs = len(mean_loss_per_epoch_train_drr)
 model_name = 'cnn' if pkl_contents[0]['model'] == 'CNNNetwork' else 'resnet'
 
@@ -22,8 +27,12 @@ print('Model:', pkl_contents[0]['model'])
 print('Number of epochs:', num_epochs)
 print('DRR train loss per epoch:', mean_loss_per_epoch_train_drr)
 print('RT60 train loss per epoch:', mean_loss_per_epoch_train_rt60)
+print('DRR train R2 score per epoch:', mean_r2_per_epoch_train_drr)
+print('RT60 train R2 score per epoch:', mean_r2_per_epoch_train_rt60)
 print('DRR evaluation loss per epoch:', mean_loss_per_epoch_eval_drr)
 print('RT60 evaluation loss per epoch:', mean_loss_per_epoch_eval_rt60)
+print('DRR evaluation R2 score per epoch:', mean_r2_per_epoch_eval_drr)
+print('RT60 evaluation R2 score per epoch:', mean_r2_per_epoch_eval_rt60)
 print('Date and time:', pkl_contents[0]['datetime'])
 
 PLOT = True
@@ -42,6 +51,18 @@ if PLOT:
     plt.savefig(plot_filename)
     plt.show()
 
+    plot_filename = 'figs/' + model_name + 'r2-plot-train-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+    plt.figure(figsize=(10, 5))
+    plt.title("CNN DRR and RT60 training R2 score per epoch")
+    plt.plot(range(1, num_epochs + 1), mean_r2_per_epoch_train_drr, linestyle='solid', marker='o', label="drr")
+    plt.plot(range(1, num_epochs + 1), mean_r2_per_epoch_train_rt60, linestyle='solid', marker='o', label="rt60")
+    plt.xlabel("Epoch")
+    plt.ylabel("R2 score")
+    plt.ylim(0, 1)
+    plt.legend()
+    plt.savefig(plot_filename)
+    plt.show()
+
     plot_filename = 'figs/' + model_name + 'loss-plot-eval-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
     plt.figure(figsize=(10, 5))
     plt.title(model_name + " DRR and RT60 evaluation loss per epoch")
@@ -54,4 +75,17 @@ if PLOT:
     plt.legend()
     plt.savefig(plot_filename)
     plt.show()
+
+    plot_filename = 'figs/' + model_name + 'r2-plot-eval-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+    plt.figure(figsize=(10, 5))
+    plt.title("CNN DRR and RT60 evaluation R2 score per epoch")
+    plt.plot(range(1, num_epochs + 1), mean_r2_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
+    plt.plot(range(1, num_epochs + 1), mean_r2_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
+    plt.xlabel("Epoch")
+    plt.ylabel("R2 score")
+    plt.ylim(0, 1)
+    plt.legend()
+    plt.savefig(plot_filename)
+    plt.show()
+
 
