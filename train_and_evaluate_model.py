@@ -6,7 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as numpy
 import os
 import subprocess
-from torcheval.metrics import R2Score
+from torcheval.metrics.functional import r2_score
 import datetime
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pickle
@@ -23,8 +23,12 @@ EARLY_STOPPING_PATIENCE = 20
 def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer, device, epochs):
     mean_loss_per_epoch_train_drr = []
     mean_loss_per_epoch_train_rt60 = []
+    mean_r2_per_epoch_train_drr = []
+    mean_r2_per_epoch_train_rt60 = []
     mean_loss_per_epoch_eval_drr = []
     mean_loss_per_epoch_eval_rt60 = []
+    mean_r2_per_epoch_eval_drr = []
+    mean_r2_per_epoch_eval_rt60 = []
     scheduler = ReduceLROnPlateau(optimizer=optimizer, mode='min', patience=1)
     model = model.to(device)
     model = model.train()
@@ -32,6 +36,8 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
         print("---- Training ---\n")
         losses_per_epoch_train_drr = []
         losses_per_epoch_train_rt60 = []
+        r2s_per_epoch_train_drr = []
+        r2s_per_epoch_train_rt60 = []
         print("Learning rate: ", optimizer.param_groups[0]['lr'])
         with tqdm.tqdm(train_dataloader, unit="batch", total=len(train_dataloader)) as tepoch:
             for waveform, drrs_true, rt60s_true in tepoch:
@@ -48,22 +54,35 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
                     rt60_estimates = estimates[:, 1]
                 loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
                 loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
+                r2_drr = r2_score(drr_estimates.float(), drrs_true.float())
+                r2_rt60 = r2_score(rt60_estimates.float(), rt60s_true.float())
                 losses_per_epoch_train_drr.append(loss_drr.item())
                 losses_per_epoch_train_rt60.append(loss_rt60.item())
+                r2s_per_epoch_train_drr.append(r2_drr.item())
+                r2s_per_epoch_train_rt60.append(r2_rt60.item())
                 # backpropogate the losses and update the gradients
                 optimizer.zero_grad()
                 loss_drr.backward(retain_graph=True)
                 loss_rt60.backward()
                 optimizer.step()
-                tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
+                tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item(), r2_drr=r2_drr.item(),
+                                   r2_rt60=r2_rt60.item())
         current_epoch_loss_train_drr = sum(losses_per_epoch_train_drr) / len(losses_per_epoch_train_drr)
         current_epoch_loss_train_rt60 = sum(losses_per_epoch_train_rt60) / len(losses_per_epoch_train_rt60)
+        current_epoch_r2_train_drr = sum(r2s_per_epoch_train_drr) / len(r2s_per_epoch_train_drr)
+        current_epoch_r2_train_rt60 = sum(r2s_per_epoch_train_rt60) / len(r2s_per_epoch_train_rt60)
         print(f"Mean DRR training loss for epoch {epoch + 1}:",
               current_epoch_loss_train_drr)
         print(f"Mean RT60 training loss for epoch {epoch + 1}:",
               current_epoch_loss_train_rt60)
+        print(f"Mean DRR training R2 score for epoch {epoch + 1}:",
+              current_epoch_r2_train_drr)
+        print(f"Mean RT60 training R2 score for epoch {epoch + 1}:",
+              current_epoch_r2_train_rt60)
         mean_loss_per_epoch_train_drr.append(current_epoch_loss_train_drr)
         mean_loss_per_epoch_train_rt60.append(current_epoch_loss_train_rt60)
+        mean_r2_per_epoch_train_drr.append(current_epoch_r2_train_drr)
+        mean_r2_per_epoch_train_rt60.append(current_epoch_r2_train_rt60)
 
         print("---- Evaluation ---\n")
 
@@ -74,6 +93,8 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
         early_stopping_trigger_times = 0
         losses_per_epoch_eval_drr = []
         losses_per_epoch_eval_rt60 = []
+        r2s_per_epoch_eval_drr = []
+        r2s_per_epoch_eval_rt60 = []
         with tqdm.tqdm(eval_dataloader, unit="batch", total=len(eval_dataloader)) as tepoch:
             for waveform, drrs_true, rt60s_true in tepoch:
                 tepoch.set_description(f"Epoch {epoch + 1}")
@@ -89,15 +110,26 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
                     rt60_estimates = estimates[:, 1]
                 loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
                 loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
+                r2_drr = r2_score(drr_estimates.float(), drrs_true.float())
+                r2_rt60 = r2_score(rt60_estimates.float(), rt60s_true.float())
                 losses_per_epoch_eval_drr.append(loss_drr.item())
                 losses_per_epoch_eval_rt60.append(loss_rt60.item())
-                tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
+                r2s_per_epoch_eval_drr.append(r2_drr.item())
+                r2s_per_epoch_eval_rt60.append(r2_rt60.item())
+                tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item(), r2_drr=r2_drr.item(),
+                                   r2_rt60=r2_rt60.item())
         current_epoch_loss_eval_drr = sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr)
         current_epoch_loss_eval_rt60 = sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60)
+        current_epoch_r2_eval_drr = sum(r2s_per_epoch_eval_drr) / len(r2s_per_epoch_eval_drr)
+        current_epoch_r2_eval_rt60 = sum(r2s_per_epoch_eval_rt60) / len(r2s_per_epoch_eval_rt60)
         print(f"Mean DRR evaluation loss for epoch {epoch + 1}:",
               current_epoch_loss_eval_drr)
         print(f"Mean RT60 evaluation loss for epoch {epoch + 1}:",
               current_epoch_loss_eval_rt60)
+        print(f"Mean DRR evaluation R2 score for epoch {epoch + 1}:",
+              current_epoch_r2_eval_drr)
+        print(f"Mean RT60 evaluation R2 score for epoch {epoch + 1}:",
+              current_epoch_r2_eval_rt60)
         # Early stopping
         if current_epoch_loss_eval_drr > last_loss_drr or current_epoch_loss_eval_rt60 > last_loss_rt60:
             early_stopping_trigger_times += 1
@@ -112,6 +144,10 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
 
         mean_loss_per_epoch_eval_drr.append(current_epoch_loss_eval_drr)
         mean_loss_per_epoch_eval_rt60.append(current_epoch_loss_eval_rt60)
+        mean_r2_per_epoch_eval_drr.append(current_epoch_r2_eval_drr)
+        mean_r2_per_epoch_eval_rt60.append(current_epoch_r2_eval_rt60)
         scheduler.step(current_epoch_loss_eval_rt60)
 
-    return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
+    return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, \
+           mean_loss_per_epoch_eval_rt60, mean_r2_per_epoch_train_drr, mean_r2_per_epoch_train_rt60, mean_r2_per_epoch_eval_drr, \
+           mean_r2_per_epoch_eval_rt60
