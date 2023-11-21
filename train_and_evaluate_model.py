@@ -17,7 +17,7 @@ from CNN import *
 import time
 import matplotlib.pyplot as plt
 
-EARLY_STOPPING_PATIENCE = 20
+EARLY_STOPPING_PATIENCE = 10
 
 def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer, device, epochs):
     mean_loss_per_epoch_train_drr = []
@@ -107,14 +107,13 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
             tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
     current_epoch_loss_eval_drr = sum(losses_per_epoch_eval_drr) / len(losses_per_epoch_eval_drr)
     current_epoch_loss_eval_rt60 = sum(losses_per_epoch_eval_rt60) / len(losses_per_epoch_eval_rt60)
-    print(f"Mean DRR evaluation loss:",
+    print(f"DRR evaluation loss:",
           current_epoch_loss_eval_drr)
-    print(f"Mean RT60 evaluation loss:",
+    print(f"RT60 evaluation loss:",
           current_epoch_loss_eval_rt60)
 
     mean_loss_per_epoch_eval_drr.append(current_epoch_loss_eval_drr)
     mean_loss_per_epoch_eval_rt60.append(current_epoch_loss_eval_rt60)
-    scheduler.step(current_epoch_loss_eval_rt60)
 
     return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, \
            mean_loss_per_epoch_eval_rt60
