@@ -25,9 +25,13 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
     mean_loss_per_epoch_eval_drr = []
     mean_loss_per_epoch_eval_rt60 = []
     scheduler = ReduceLROnPlateau(optimizer=optimizer, mode='min', patience=1)
+    # Early stopping parameters
+    last_loss_drr = 100
+    last_loss_rt60 = 100
+    early_stopping_trigger_times = 0
     model = model.to(device)
-    model = model.train()
     for epoch in range(epochs):
+        model = model.train()
         print("---- Training ---\n")
         losses_per_epoch_train_drr = []
         losses_per_epoch_train_rt60 = []
@@ -54,24 +58,32 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
                 loss_drr.backward(retain_graph=True)
                 loss_rt60.backward()
                 optimizer.step()
-                tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item(), r2_drr=r2_drr.item(),
-                                   r2_rt60=r2_rt60.item())
+                tepoch.set_postfix(loss_drr=loss_drr.item(), loss_rt60=loss_rt60.item())
         current_epoch_loss_train_drr = sum(losses_per_epoch_train_drr) / len(losses_per_epoch_train_drr)
         current_epoch_loss_train_rt60 = sum(losses_per_epoch_train_rt60) / len(losses_per_epoch_train_rt60)
         print(f"Mean DRR training loss for epoch {epoch + 1}:",
               current_epoch_loss_train_drr)
         print(f"Mean RT60 training loss for epoch {epoch + 1}:",
               current_epoch_loss_train_rt60)
+        # Early stopping
+        if current_epoch_loss_train_drr > last_loss_drr or current_epoch_loss_train_rt60 > last_loss_rt60:
+            early_stopping_trigger_times += 1
+            print("Trigger times: ", early_stopping_trigger_times)
+
+            if early_stopping_trigger_times > EARLY_STOPPING_PATIENCE:
+                print("Early Stopping!")
+                return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
+        else:
+            early_stopping_trigger_times = 0
+            print("Trigger times: ", early_stopping_trigger_times)
+        last_loss_drr = current_epoch_loss_train_drr
+        last_loss_rt60 = current_epoch_loss_train_rt60
         mean_loss_per_epoch_train_drr.append(current_epoch_loss_train_drr)
         mean_loss_per_epoch_train_rt60.append(current_epoch_loss_train_rt60)
 
         print("---- Evaluation ---\n")
 
         model = model.eval()
-        # Early stopping parameters
-        last_loss_drr = 100
-        last_loss_rt60 = 100
-        early_stopping_trigger_times = 0
         losses_per_epoch_eval_drr = []
         losses_per_epoch_eval_rt60 = []
         with tqdm.tqdm(eval_dataloader, unit="batch", total=len(eval_dataloader)) as tepoch:
@@ -98,17 +110,6 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
               current_epoch_loss_eval_drr)
         print(f"Mean RT60 evaluation loss for epoch {epoch + 1}:",
               current_epoch_loss_eval_rt60)
-        # Early stopping
-        if current_epoch_loss_eval_drr > last_loss_drr or current_epoch_loss_eval_rt60 > last_loss_rt60:
-            early_stopping_trigger_times += 1
-            print("Trigger times: ", early_stopping_trigger_times)
-
-            if early_stopping_trigger_times > EARLY_STOPPING_PATIENCE:
-                print("Early Stopping!")
-                return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
-        else:
-            early_stopping_trigger_times = 0
-            print("Trigger times: ", early_stopping_trigger_times)
 
         mean_loss_per_epoch_eval_drr.append(current_epoch_loss_eval_drr)
         mean_loss_per_epoch_eval_rt60.append(current_epoch_loss_eval_rt60)
