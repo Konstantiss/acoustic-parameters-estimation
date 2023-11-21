@@ -95,8 +95,8 @@ results = {
 print('Total execution time: {:.4f} minutes', format(execution_time))
 print("Mean training loss per epoch DRR:", mean_loss_per_epoch_train_drr)
 print("Mean training loss per epoch RT60:", mean_loss_per_epoch_train_rt60)
-print("Mean evaluation loss per epoch DRR:", mean_loss_per_epoch_eval_drr)
-print("Mean evaluation loss per epoch RT60:", mean_loss_per_epoch_eval_rt60)
+print("Evaluation loss DRR:", mean_loss_per_epoch_eval_drr)
+print("Evaluation loss RT60:", mean_loss_per_epoch_eval_rt60)
 
 results_filename = RESULTS_DIR + 'results-densenet-' + date_time + '-' + str(EPOCHS) + '.pkl'
 with open(results_filename, 'wb') as handle:
