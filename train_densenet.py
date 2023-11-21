@@ -34,6 +34,8 @@ transform = transforms.Compose([
     # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
+RESULTS_DIR = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Results/'
+
 DATA_PATH_TRAIN = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Data/ACE/script-output/Train/Speech/'
 annotations_file_path_train = DATA_PATH_TRAIN + 'features_and_ground_truth_train.csv'
 
@@ -76,9 +78,9 @@ mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60 = train_evaluate(
 
 execution_time = (time.time() - start_time) / 60
 date_time = str(datetime.datetime.now())
-model_save_filename = 'resnet-save' + date_time + '-' + str(EPOCHS) + '.bin'
+model_save_filename = RESULTS_DIR + 'densenet-save' + date_time + '-' + str(EPOCHS) + '.bin'
 
-torch.save(model.state_dict(), model_save_filename)
+torch.save(model.state_dict(), RESULTS_DIR + model_save_filename)
 
 results = {
     "model": model.__class__.__name__,
@@ -96,11 +98,11 @@ print("Mean training loss per epoch RT60:", mean_loss_per_epoch_train_rt60)
 print("Mean evaluation loss per epoch DRR:", mean_loss_per_epoch_eval_drr)
 print("Mean evaluation loss per epoch RT60:", mean_loss_per_epoch_eval_rt60)
 
-results_filename = 'results-' + date_time + '-' + str(EPOCHS) + '.pkl'
+results_filename = RESULTS_DIR + 'results-densenet-' + date_time + '-' + str(EPOCHS) + '.pkl'
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-plot_filename = 'figs/densenet-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+plot_filename = RESULTS_DIR + 'figs/densenet-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
 plt.figure(figsize=(10, 5))
 plt.title("DenseNet121 DRR and RT60 training loss per epoch")
 plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="drr")
@@ -112,15 +114,15 @@ plt.legend()
 plt.savefig(plot_filename)
 plt.show()
 
-plot_filename = 'figs/densenet-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("DenseNet121 DRR and RT60 evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.ylim(0, 1)
-plt.legend()
-plt.savefig(plot_filename)
-plt.show()
+# plot_filename = RESULTS_DIR + 'figs/densenet-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("DenseNet121 DRR and RT60 evaluation loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.ylim(0, 1)
+# plt.legend()
+# plt.savefig(plot_filename)
+# plt.show()
 
