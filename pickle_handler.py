@@ -1,7 +1,9 @@
 import pickle
 import matplotlib.pyplot as plt
 
-pickle_file_path = 'results-2023-11-06 18:32:30.659726.pkl'
+RESULTS_DIR = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Results/'
+
+pickle_file_path = RESULTS_DIR + 'results-2023-11-06 18:32:30.659726.pkl'
 
 pkl_contents = []
 with (open(pickle_file_path, "rb")) as openfile:
@@ -21,7 +23,8 @@ mean_r2_per_epoch_eval_drr = pkl_contents[0]['eval_r2_drr']
 mean_r2_per_epoch_eval_rt60 = pkl_contents[0]['eval_r2_rt60']
 
 num_epochs = len(mean_loss_per_epoch_train_drr)
-model_name = 'cnn' if pkl_contents[0]['model'] == 'CNNNetwork' else 'resnet'
+#model_name = 'cnn' if pkl_contents[0]['model'] == 'CNNNetwork' else 'resnet'
+model_name = pkl_contents[0]['model']
 
 print('Model:', pkl_contents[0]['model'])
 print('Number of epochs:', num_epochs)
