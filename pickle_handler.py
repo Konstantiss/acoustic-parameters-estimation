@@ -34,6 +34,7 @@ print('RT60 evaluation loss per epoch:', mean_loss_per_epoch_eval_rt60)
 print('DRR evaluation R2 score per epoch:', mean_r2_per_epoch_eval_drr)
 print('RT60 evaluation R2 score per epoch:', mean_r2_per_epoch_eval_rt60)
 print('Date and time:', pkl_contents[0]['datetime'])
+print('Execution time:', pkl_contents[0]['execution_time'])
 
 PLOT = True
 

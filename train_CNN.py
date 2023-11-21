@@ -52,6 +52,7 @@ mean_r2_per_epoch_eval_drr, mean_r2_per_epoch_eval_rt60 = train_evaluate(
     optimizer=optimizer,
     device=device, epochs=EPOCHS)
 
+execution_time = (time.time() - start_time) / 60
 date_time = str(datetime.datetime.now())
 model_save_filename = 'cnn-save' + date_time + '-' + str(EPOCHS) + '.bin'
 
@@ -67,10 +68,11 @@ results = {
     "eval_loss_rt60": mean_loss_per_epoch_eval_rt60,
     "eval_r2_drr": mean_r2_per_epoch_eval_drr,
     "eval_r2_rt60": mean_r2_per_epoch_eval_rt60,
-    "datetime": datetime.datetime.now()
+    "datetime": datetime.datetime.now(),
+    "execution_time": execution_time
 }
 
-print('Total execution time: {:.4f} minutes', format((time.time() - start_time) / 60))
+print('Total execution time: {:.4f} minutes', format(execution_time))
 print("Mean training loss per epoch DRR:", mean_loss_per_epoch_train_drr)
 print("Mean training loss per epoch RT60:", mean_loss_per_epoch_train_rt60)
 print("Mean training R2 score per epoch DRR:", mean_r2_per_epoch_train_drr)
