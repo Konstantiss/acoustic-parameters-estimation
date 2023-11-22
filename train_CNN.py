@@ -54,9 +54,9 @@ mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60 = train_evaluate(
 
 execution_time = (time.time() - start_time) / 60
 date_time = str(datetime.datetime.now())
-model_save_filename = RESULTS_DIR + 'cnn-save' + date_time + '-' + str(EPOCHS) + '.bin'
+model_save_filename = RESULTS_DIR + 'cnn-save-' + date_time + '-' + str(EPOCHS) + '.bin'
 
-torch.save(model.state_dict(), RESULTS_DIR + model_save_filename)
+torch.save(model.state_dict(), model_save_filename)
 
 results = {
     "model": model.__class__.__name__,
@@ -88,7 +88,7 @@ plt.ylabel("Loss")
 plt.ylim(0, 1)
 plt.legend()
 plt.savefig(plot_filename)
-plt.show()
+#plt.show()
 
 # plot_filename = RESULTS_DIR + 'figs/cnn-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
 # plt.figure(figsize=(10, 5))
