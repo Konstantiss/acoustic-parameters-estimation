@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 RESULTS_DIR = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Results/'
 
-pickle_file_path = RESULTS_DIR + 'results-2023-11-06 18:32:30.659726.pkl'
+pickle_file_path = RESULTS_DIR + 'results-resnet2023-11-22 13:49:08.831606-1.pkl'
 
 pkl_contents = []
 with (open(pickle_file_path, "rb")) as openfile:
@@ -26,19 +26,15 @@ print('Model:', pkl_contents[0]['model'])
 print('Number of epochs:', num_epochs)
 print('DRR train loss per epoch:', mean_loss_per_epoch_train_drr)
 print('RT60 train loss per epoch:', mean_loss_per_epoch_train_rt60)
-print('DRR train R2 score per epoch:', mean_r2_per_epoch_train_drr)
-print('RT60 train R2 score per epoch:', mean_r2_per_epoch_train_rt60)
 print('DRR evaluation loss per epoch:', mean_loss_per_epoch_eval_drr)
 print('RT60 evaluation loss per epoch:', mean_loss_per_epoch_eval_rt60)
-print('DRR evaluation R2 score per epoch:', mean_r2_per_epoch_eval_drr)
-print('RT60 evaluation R2 score per epoch:', mean_r2_per_epoch_eval_rt60)
 print('Date and time:', pkl_contents[0]['datetime'])
 print('Execution time:', pkl_contents[0]['execution_time'])
 
 PLOT = True
 
 if PLOT:
-    plot_filename = RESULTS_DIR + 'figs/' + model_name + 'loss-plot-train-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+    plot_filename = RESULTS_DIR + 'figs/' + model_name + '-loss-plot-train-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
     plt.figure(figsize=(10, 5))
     plt.title(model_name + "DRR and RT60 training loss per epoch")
     plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="drr")
