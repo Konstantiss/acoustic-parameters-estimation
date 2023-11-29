@@ -45,7 +45,7 @@ annotations_file_path_eval = DATA_PATH_EVAL + 'features_and_ground_truth_eval.cs
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 256
-EPOCHS = 1
+EPOCHS = 30
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 train_dataset = ACEDataset(annotations_file_path_train, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device, resnet=True,
@@ -98,7 +98,7 @@ print("Mean training loss per epoch RT60:", mean_loss_per_epoch_train_rt60)
 print("Evaluation loss DRR:", mean_loss_per_epoch_eval_drr)
 print("Evaluation loss RT60:", mean_loss_per_epoch_eval_rt60)
 
-results_filename = RESULTS_DIR + 'results-resnet' + date_time + '-' + str(EPOCHS) + '.pkl'
+results_filename = RESULTS_DIR + 'results-resnet-' + date_time + '-' + str(EPOCHS) + '.pkl'
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
