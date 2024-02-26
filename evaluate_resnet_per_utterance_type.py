@@ -114,6 +114,6 @@ print('Total execution time: {:.4f} minutes', format(execution_time))
 print("Evaluation loss DRR:", losses_drr)
 print("Evaluation loss RT60:", losses_rt60)
 
-results_filename = RESULTS_DIR + 'results-resnet-per-utterance-' + date_time + '-' + str(EPOCHS) + '.pkl'
+results_filename = RESULTS_DIR + 'results-resnet-per-utterance-' + date_time + '.pkl'
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
