@@ -45,7 +45,7 @@ annotations_file_path_eval = DATA_PATH_EVAL + 'features_and_ground_truth_eval.cs
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 64
-EPOCHS = 1
+EPOCHS = 30
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 train_dataset = ACEDataset(annotations_file_path_train, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device, resnet=True,
@@ -114,15 +114,15 @@ plt.legend()
 plt.savefig(plot_filename)
 #plt.show()
 
-# plot_filename = RESULTS_DIR +'figs/vgg-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-# plt.figure(figsize=(10, 5))
-# plt.title("VGG19 DRR and RT60 evaluation loss per epoch")
-# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
-# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
-# plt.xlabel("Epoch")
-# plt.ylabel("Loss")
-# plt.ylim(0, 1)
-# plt.legend()
-# plt.savefig(plot_filename)
+plot_filename = RESULTS_DIR +'figs/vgg-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+plt.figure(figsize=(10, 5))
+plt.title("VGG19 DRR and RT60 evaluation loss per epoch")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.ylim(0, 1)
+plt.legend()
+plt.savefig(plot_filename)
 # plt.show()
 
