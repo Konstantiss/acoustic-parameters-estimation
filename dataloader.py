@@ -21,12 +21,13 @@ class ACEDataset(Dataset):
         data = pd.read_csv(annotations_file)
         scaler = MinMaxScaler()
         self.path_list = data['file'].tolist()
-        # self.drr_list = data['FBDRRMean(Ch)'].tolist()
-        self.drr_list = data['FBDRRMean(Ch)'].values.reshape(-1, 1)
-        self.drr_list = scaler.fit_transform(self.drr_list)
-        # self.rt60_list = data['FBT60Mean(Ch)'].tolist()
-        self.rt60_list = data['FBT60Mean(Ch)'].values.reshape(-1, 1)
-        self.rt60_list = scaler.fit_transform(self.rt60_list)
+        self.drr_list = data['FBDRRMean(Ch)'].tolist()
+        # rescale data
+        # self.drr_list = data['FBDRRMean(Ch)'].values.reshape(-1, 1)
+        # self.drr_list = scaler.fit_transform(self.drr_list)
+        self.rt60_list = data['FBT60Mean(Ch)'].tolist()
+        # self.rt60_list = data['FBT60Mean(Ch)'].values.reshape(-1, 1)
+        # self.rt60_list = scaler.fit_transform(self.rt60_list)
         self.device = device
         self.transformation = transformation
         self.target_sample_rate = target_sample_rate
