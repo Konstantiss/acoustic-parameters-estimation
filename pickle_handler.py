@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 RESULTS_DIR = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Results/'
 
-pickle_file_path = RESULTS_DIR + 'results-resnet-per-utterance-2024-02-26 16:59:39.587180-30.pkl'
+pickle_file_path = RESULTS_DIR + 'results-densenet-2023-11-23 084819.517556-30.pkl'
 
 pkl_contents = []
 with (open(pickle_file_path, "rb")) as openfile:
@@ -64,17 +64,17 @@ else:
         plt.savefig(plot_filename)
         plt.show()
 
-        # plot_filename = RESULTS_DIR + 'figs/' + model_name + 'loss-plot-eval-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
-        # plt.figure(figsize=(10, 5))
-        # plt.title(model_name + " DRR and RT60 evaluation loss per epoch")
-        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
-        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
-        # plt.xlabel("Epoch")
-        # plt.ylabel("Loss")
-        # plt.xlim(1, )
-        # plt.ylim(0, 1)
-        # plt.legend()
-        # plt.savefig(plot_filename)
-        # plt.show()
+        plot_filename = RESULTS_DIR + 'figs/' + model_name + 'loss-plot-eval-' + str(pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+        plt.figure(figsize=(10, 5))
+        plt.title(model_name + " DRR and RT60 evaluation loss per epoch")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.xlim(1, )
+        plt.ylim(0, 1)
+        plt.legend()
+        plt.savefig(plot_filename)
+        plt.show()
 
 
