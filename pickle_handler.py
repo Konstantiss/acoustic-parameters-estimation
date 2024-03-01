@@ -51,7 +51,7 @@ else:
     PLOT = True
 
     if PLOT:
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + 'rt60-loss-plot-train-' + str(
+        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-rt60-loss-plot-train-' + str(
             pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
         plt.figure(figsize=(10, 5))
         plt.title(model_name + "RT60 training loss per epoch")
@@ -64,7 +64,7 @@ else:
         plt.savefig(plot_filename)
         plt.show()
 
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + 'drr-loss-plot-train-' + str(
+        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-drr-loss-plot-train-' + str(
             pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
         plt.figure(figsize=(10, 5))
         plt.title(model_name + "DRR training loss per epoch")
@@ -77,7 +77,7 @@ else:
         plt.savefig(plot_filename)
         plt.show()
 
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + 'rt60-loss-plot-eval-' + str(
+        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-rt60-loss-plot-eval-' + str(
             pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
         plt.figure(figsize=(10, 5))
         plt.title(model_name + "RT60 evaluation loss per epoch")
@@ -90,7 +90,7 @@ else:
         plt.savefig(plot_filename)
         plt.show()
 
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + 'drr-loss-plot-eval-' + str(
+        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-drr-loss-plot-eval-' + str(
             pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
         plt.figure(figsize=(10, 5))
         plt.title(model_name + "DRR evaluation loss per epoch")
