@@ -117,8 +117,8 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
         else:
             early_stopping_trigger_times = 0
             print("Trigger times: ", early_stopping_trigger_times)
-        last_loss_drr = current_epoch_loss_train_drr
-        last_loss_rt60 = current_epoch_loss_train_rt60
+        last_loss_drr = current_epoch_loss_eval_drr
+        last_loss_rt60 = current_epoch_loss_eval_rt60
 
     return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, \
            mean_loss_per_epoch_eval_rt60
