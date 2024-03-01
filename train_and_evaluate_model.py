@@ -17,7 +17,7 @@ from dataloader import *
 import time
 import matplotlib.pyplot as plt
 
-EARLY_STOPPING_PATIENCE = 2
+EARLY_STOPPING_PATIENCE = 4
 
 def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer, device, epochs):
     mean_loss_per_epoch_train_drr = []
@@ -69,8 +69,6 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
               current_epoch_loss_train_drr)
         print(f"Mean RT60 training loss for epoch {epoch + 1}:",
               current_epoch_loss_train_rt60)
-        last_loss_drr = current_epoch_loss_train_drr
-        last_loss_rt60 = current_epoch_loss_train_rt60
         mean_loss_per_epoch_train_drr.append(current_epoch_loss_train_drr)
         mean_loss_per_epoch_train_rt60.append(current_epoch_loss_train_rt60)
         scheduler.step(current_epoch_loss_train_drr)
@@ -106,19 +104,21 @@ def train_evaluate(model, train_dataloader, eval_dataloader, loss_fn, optimizer,
               current_epoch_loss_eval_drr)
         print(f"Mean RT60 evaluation loss for epoch {epoch + 1}:",
               current_epoch_loss_eval_rt60)
+        mean_loss_per_epoch_eval_drr.append(current_epoch_loss_eval_drr)
+        mean_loss_per_epoch_eval_rt60.append(current_epoch_loss_eval_rt60)
         # Early stopping
-        if current_epoch_loss_eval_drr > last_loss_drr or current_epoch_loss_eval_rt60 > last_loss_rt60:
+        if current_epoch_loss_eval_drr > last_loss_drr: #or current_epoch_loss_eval_rt60 > last_loss_rt60:
             early_stopping_trigger_times += 1
             print("Trigger times: ", early_stopping_trigger_times)
 
             if early_stopping_trigger_times > EARLY_STOPPING_PATIENCE:
                 print("Early Stopping!")
-                return mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
+                return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60
         else:
             early_stopping_trigger_times = 0
             print("Trigger times: ", early_stopping_trigger_times)
-        mean_loss_per_epoch_eval_drr.append(current_epoch_loss_eval_drr)
-        mean_loss_per_epoch_eval_rt60.append(current_epoch_loss_eval_rt60)
+        last_loss_drr = current_epoch_loss_train_drr
+        last_loss_rt60 = current_epoch_loss_train_rt60
 
     return mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, mean_loss_per_epoch_eval_drr, \
            mean_loss_per_epoch_eval_rt60
