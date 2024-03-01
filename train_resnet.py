@@ -102,27 +102,50 @@ results_filename = RESULTS_DIR + 'results-resnet-' + date_time + '-' + str(EPOCH
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-plot_filename = RESULTS_DIR + 'figs/resnet-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+plot_filename = RESULTS_DIR + 'figs/resnet-rt60-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
 plt.figure(figsize=(10, 5))
-plt.title("Resnet DRR and RT60 training loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="drr")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="rt60")
+plt.title("Resnet RT60 training loss per epoch")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
+plt.xlim(1, )
 plt.ylim(0, 1)
 plt.legend()
 plt.savefig(plot_filename)
 #plt.show()
 
-plot_filename = RESULTS_DIR + 'figs/resnet-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+plot_filename = RESULTS_DIR + 'figs/resnet-drr-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
 plt.figure(figsize=(10, 5))
-plt.title("Resnet DRR and RT60 evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="drr")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="rt60")
+plt.title("Resnet DRR training loss per epoch")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
+plt.xlim(1, )
+plt.ylim(0, 15)
+plt.legend()
+plt.savefig(plot_filename)
+#plt.show()
+
+plot_filename = RESULTS_DIR + 'figs/resnet-rt60-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+plt.figure(figsize=(10, 5))
+plt.title("Resnet RT60 evaluation loss per epoch")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.xlim(1, )
 plt.ylim(0, 1)
 plt.legend()
 plt.savefig(plot_filename)
 #plt.show()
 
+plot_filename = RESULTS_DIR + 'figs/resnet-drr-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+plt.figure(figsize=(10, 5))
+plt.title("Resnet DRR evaluation loss per epoch")
+plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.xlim(1, )
+plt.ylim(0, 15)
+plt.legend()
+plt.savefig(plot_filename)
+#plt.show()
