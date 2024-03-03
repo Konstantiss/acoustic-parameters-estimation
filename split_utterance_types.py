@@ -18,15 +18,15 @@ def split(df):
 
     for i, row in df.iterrows():
         if '_s1_' in row['filename']:
-            s1_utterances.loc[len(s3_utterances)] = row
+            s1_utterances.loc[len(s1_utterances)] = row
         if '_s2_' in row['filename']:
-            s2_utterances.loc[len(s3_utterances)] = row
+            s2_utterances.loc[len(s2_utterances)] = row
         if '_s3_' in row['filename']:
             s3_utterances.loc[len(s3_utterances)] = row
         if '_s4_' in row['filename']:
-            s4_utterances.loc[len(s3_utterances)] = row
+            s4_utterances.loc[len(s4_utterances)] = row
         if '_s5_' in row['filename']:
-            s5_utterances.loc[len(s3_utterances)] = row
+            s5_utterances.loc[len(s5_utterances)] = row
     return s1_utterances, s2_utterances, s3_utterances, s4_utterances, s5_utterances
 
 s1_utterances_eval, s2_utterances_eval, s3_utterances_eval, s4_utterances_eval, s5_utterances_eval = split(data_eval)
