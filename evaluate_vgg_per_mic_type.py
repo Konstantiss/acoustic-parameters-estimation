@@ -119,7 +119,7 @@ print('Total execution time: {:.4f} minutes', format(execution_time))
 print("Evaluation loss DRR:", losses_drr)
 print("Evaluation loss RT60:", losses_rt60)
 
-results_filename = RESULTS_DIR + 'results-vgg-per-utterance-' + date_time + '.pkl'
+results_filename = RESULTS_DIR + 'results-vgg-per-mic-' + date_time + '.pkl'
 results_filename = results_filename.replace(":", "")
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
