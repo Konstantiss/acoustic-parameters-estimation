@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 RESULTS_DIR = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Results/'
 
-pickle_file_path = RESULTS_DIR + 'results-densenet-2024-03-01 105612.600113-30.pkl'
+pickle_file_path = RESULTS_DIR + 'results-densenet-per-mic-2024-03-03 173919.388429.pkl'
 
 pkl_contents = []
 with (open(pickle_file_path, "rb")) as openfile:
@@ -28,7 +28,25 @@ if 'per-utterance' in pickle_file_path:
     print('S5 utterance loss RT60:', pkl_contents[0]['s5_utterance_loss_rt60'])
     print('Date and time:', pkl_contents[0]['datetime'])
     print('Execution time:', pkl_contents[0]['execution_time'])
-    model_name = pkl_contents[0]['model']
+
+if 'per-mic' in pickle_file_path:
+    print("---- Results per microphone ----")
+    print('Model:', pkl_contents[0]['model'])
+    print('Single loss DRR:', pkl_contents[0]['single_loss_drr'])
+    print('Single loss RT60:', pkl_contents[0]['single_loss_rt60'])
+    print('Chromebook loss DRR:', pkl_contents[0]['chromebook_loss_drr'])
+    print('Chromebook loss RT60:', pkl_contents[0]['chrombook_loss_rt60'])
+    print('Mobile loss DRR:', pkl_contents[0]['mobile_loss_drr'])
+    print('Mobile loss RT60:', pkl_contents[0]['mobile_loss_rt60'])
+    print('Crucif loss DRR:', pkl_contents[0]['crucif_loss_drr'])
+    print('Crucif loss RT60:', pkl_contents[0]['crucif_loss_rt60'])
+    print('Lin8Ch loss DRR:', pkl_contents[0]['lin8ch_loss_drr'])
+    print('Lin8Ch loss RT60:', pkl_contents[0]['lin8ch_loss_rt60'])
+    print('EM32 loss DRR:', pkl_contents[0]['em32_loss_drr'])
+    print('EM32 loss RT60:', pkl_contents[0]['em32_loss_rt60'])
+    print('Date and time:', pkl_contents[0]['datetime'])
+    print('Execution time:', pkl_contents[0]['execution_time'])
+
 else:
     mean_loss_per_epoch_train_drr = pkl_contents[0]['train_loss_drr']
     mean_loss_per_epoch_train_rt60 = pkl_contents[0]['train_loss_rt60']
@@ -51,54 +69,60 @@ else:
     PLOT = True
 
     if PLOT:
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-rt60-loss-plot-train-' + str(
+        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-rt60-loss-plot-' + str(
             pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+        plot_filename = plot_filename.replace(":", "")
         plt.figure(figsize=(10, 5))
-        plt.title(model_name + "RT60 training loss per epoch")
-        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+        plt.title(model_name + "RT60 loss per epoch")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="train")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="eval")
         plt.xlabel("Epoch")
-        plt.ylabel("Loss")
+        plt.ylabel("Mean Square Error Loss")
         plt.xlim(1, )
         plt.ylim(0, 1)
         plt.legend()
         plt.savefig(plot_filename)
         plt.show()
 
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-drr-loss-plot-train-' + str(
+        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-drr-loss-plot-' + str(
             pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+        plot_filename = plot_filename.replace(":", "")
         plt.figure(figsize=(10, 5))
-        plt.title(model_name + "DRR training loss per epoch")
-        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
+        plt.title(model_name + "DRR loss per epoch")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="train")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="eval")
         plt.xlabel("Epoch")
-        plt.ylabel("Loss")
+        plt.ylabel("Mean Square Error Loss")
         plt.xlim(1, )
-        plt.ylim(0, 15)
+        plt.ylim(0, 25)
         plt.legend()
         plt.savefig(plot_filename)
         plt.show()
 
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-rt60-loss-plot-eval-' + str(
-            pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
-        plt.figure(figsize=(10, 5))
-        plt.title(model_name + "RT60 evaluation loss per epoch")
-        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.xlim(1, )
-        plt.ylim(0, 1)
-        plt.legend()
-        plt.savefig(plot_filename)
-        plt.show()
-
-        plot_filename = RESULTS_DIR + 'figs/' + model_name + '-drr-loss-plot-eval-' + str(
-            pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
-        plt.figure(figsize=(10, 5))
-        plt.title(model_name + "DRR evaluation loss per epoch")
-        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.xlim(1, )
-        plt.ylim(0, 15)
-        plt.legend()
-        plt.savefig(plot_filename)
-        plt.show()
+        # plot_filename = RESULTS_DIR + 'figs/' + model_name + '-rt60-loss-plot-eval-' + str(
+        #     pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+        # plot_filename = plot_filename.replace(":", "")
+        # plt.figure(figsize=(10, 5))
+        # plt.title(model_name + "RT60 evaluation loss per epoch")
+        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+        # plt.xlabel("Epoch")
+        # plt.ylabel("Loss")
+        # plt.xlim(1, )
+        # plt.ylim(0, 1)
+        # plt.legend()
+        # plt.savefig(plot_filename)
+        # plt.show()
+        #
+        # plot_filename = RESULTS_DIR + 'figs/' + model_name + '-drr-loss-plot-eval-' + str(
+        #     pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'
+        # plot_filename = plot_filename.replace(":", "")
+        # plt.figure(figsize=(10, 5))
+        # plt.title(model_name + "DRR evaluation loss per epoch")
+        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
+        # plt.xlabel("Epoch")
+        # plt.ylabel("Loss")
+        # plt.xlim(1, )
+        # plt.ylim(0, 15)
+        # plt.legend()
+        # plt.savefig(plot_filename)
+        # plt.show()
