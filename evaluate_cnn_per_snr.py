@@ -64,49 +64,13 @@ for i, file in enumerate(annotation_file_names):
     loss_drr, loss_rt60 = evaluate(model=model, eval_dataloader=eval_dataloader,
                                    loss_fn=loss_fn, device=device)
     print(file.split('_')[0] + " mic SNR: " + file.split('_')[1].split('_')[0] + " loss DRR:", loss_drr)
-    print(file.split('_')[0] + " mic loss RT60:", loss_rt60)
+    print(file.split('_')[0] + " mic SNR: " + file.split('_')[1].split('_')[0] + " loss RT60:", loss_rt60)
     losses_drr.append(loss_drr)
     losses_rt60.append(loss_rt60)
 
 execution_time = (time.time() - start_time) / 60
 date_time = str(datetime.datetime.now())
 
-# single_loss_drr = losses_drr[0]
-# single_loss_rt60 = losses_rt60[0]
-# chromebook_loss_drr = losses_drr[1]
-# chrombook_loss_rt60 = losses_rt60[1]
-# mobile_loss_drr = losses_drr[2]
-# mobile_loss_rt60 = losses_rt60[2]
-# crucif_loss_drr = losses_drr[3]
-# crucif_loss_rt60 = losses_rt60[3]
-# lin8ch_loss_drr = losses_drr[4]
-# lin8ch_loss_rt60 = losses_rt60[4]
-# em32_loss_drr = losses_drr[5]
-# em32_loss_rt60 = losses_rt60[5]
-#
-# results = {
-#     "model": model.__class__.__name__,
-#     "single_loss_drr": single_loss_drr,
-#     "single_loss_rt60": single_loss_rt60,
-#     "chromebook_loss_drr": chromebook_loss_drr,
-#     "chrombook_loss_rt60": chrombook_loss_rt60,
-#     "mobile_loss_drr": mobile_loss_drr,
-#     "mobile_loss_rt60": mobile_loss_rt60,
-#     "crucif_loss_drr": crucif_loss_drr,
-#     "crucif_loss_rt60": crucif_loss_rt60,
-#     "lin8ch_loss_drr": lin8ch_loss_drr,
-#     "lin8ch_loss_rt60": lin8ch_loss_rt60,
-#     "em32_loss_drr": em32_loss_drr,
-#     "em32_loss_rt60": em32_loss_rt60,
-#     "datetime": datetime.datetime.now(),
-#     "execution_time": execution_time
-# }
-
 print('Total execution time: {:.4f} minutes', format(execution_time))
 print("Evaluation loss DRR:", losses_drr)
 print("Evaluation loss RT60:", losses_rt60)
-
-# results_filename = RESULTS_DIR + 'results-cnn-per-mic-' + date_time + '.pkl'
-# results_filename = results_filename.replace(":", "")
-# with open(results_filename, 'wb') as handle:
-#     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
