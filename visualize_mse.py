@@ -116,6 +116,9 @@ drr_true, drr_estimates, rt60_true, rt60_estimates = get_estimates_and_true_valu
                                                                                    loss_fn=loss_fn,
                                                                                    optimizer=optimizer,
                                                                                    device=device)
+
+x = len(drr_true) + 1
+
 lines_drr = []
 for i, j, k in zip(range(1, x), drr_true, drr_estimates):
     pair = [(i, j), (i, k)]
@@ -179,6 +182,9 @@ drr_true, drr_estimates, rt60_true, rt60_estimates = get_estimates_and_true_valu
                                                                                    loss_fn=loss_fn,
                                                                                    optimizer=optimizer,
                                                                                    device=device)
+
+x = len(drr_true) + 1
+
 lines_drr = []
 for i, j, k in zip(range(1, x), drr_true, drr_estimates):
     pair = [(i, j), (i, k)]
@@ -241,6 +247,9 @@ drr_true, drr_estimates, rt60_true, rt60_estimates = get_estimates_and_true_valu
                                                                                    loss_fn=loss_fn,
                                                                                    optimizer=optimizer,
                                                                                    device=device)
+
+x = len(drr_true) + 1
+
 lines_drr = []
 for i, j, k in zip(range(1, x), drr_true, drr_estimates):
     pair = [(i, j), (i, k)]

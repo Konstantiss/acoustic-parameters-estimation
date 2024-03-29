@@ -53,7 +53,7 @@ losses_rt60 = []
 
 for i, file in enumerate(annotation_file_names):
     annotation_file_path = DATA_PATH_EVAL + file
-
+    print(file)
     eval_dataset = ACEDataset(annotation_file_path, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
     eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE, shuffle=True)
 

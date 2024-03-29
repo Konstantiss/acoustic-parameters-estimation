@@ -32,7 +32,7 @@ annotations_file_path_eval = DATA_PATH_EVAL + 'features_and_ground_truth_eval.cs
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 256
-EPOCHS = 30
+EPOCHS = 15
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 train_dataset = ACEDataset(annotations_file_path_train, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device)
@@ -43,8 +43,8 @@ model = CNNNetwork().cuda()
 # model.load_state_dict(torch.load('cnn-save2023-11-03 17:48:40.414314.bin'))
 
 loss_fn = torch.nn.MSELoss()
-# optimizer = torch.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
-optimizer = torch.optim.Adam(model.parameters(), lr=10e-4)
+optimizer = torch.optim.SGD(model.parameters(), lr=10e-7, momentum=0.9)
+#optimizer = torch.optim.Adam(model.parameters(), lr=10e-4)
 start_time = time.time()
 mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, \
 mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60 = train_evaluate(
@@ -75,53 +75,53 @@ print("Evaluation loss DRR:", mean_loss_per_epoch_eval_drr)
 print("Evaluation loss RT60:", mean_loss_per_epoch_eval_rt60)
 
 results_filename = RESULTS_DIR + 'results-cnn-' + date_time + '-' + str(EPOCHS) + '.pkl'
+#plt.show()
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-plot_filename = RESULTS_DIR + 'figs/cnn-rt60-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("CNN RT60 training loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 1)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/cnn-drr-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("CNN DRR training loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 15)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/cnn-rt60-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("CNN RT60 evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 1)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/cnn-drr-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("CNN DRR evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 15)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
+# plot_filename = RESULTS_DIR + 'figs/cnn-rt60-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("CNN RT60 training loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 1)
+# plt.legend()
+# plt.savefig(plot_filename)
+# #plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/cnn-drr-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("CNN DRR training loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 15)
+# plt.legend()
+# plt.savefig(plot_filename)
+# #plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/cnn-rt60-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("CNN RT60 evaluation loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 1)
+# plt.legend()
+# plt.savefig(plot_filename)
+# #plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/cnn-drr-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("CNN DRR evaluation loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 15)
+# plt.legend()
+# plt.savefig(plot_filename)

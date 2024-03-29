@@ -45,7 +45,7 @@ annotations_file_path_eval = DATA_PATH_EVAL + 'features_and_ground_truth_eval.cs
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 64
-EPOCHS = 30
+EPOCHS = 15
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
 train_dataset = ACEDataset(annotations_file_path_train, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device, resnet=True,
@@ -55,7 +55,8 @@ eval_dataset = ACEDataset(annotations_file_path_eval, melspectogram, SAMPLE_RATE
                           image_transformation=transform)
 eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-model = models.vgg19(pretrained=True).to(device)
+#model = models.vgg19(pretrained=True).to(device)
+model = models.vgg11(pretrained=True).to(device)
 
 # Freeze all the pre-trained layers
 for param in model.parameters():
@@ -66,7 +67,7 @@ model.classifier = nn.Sequential(
 )
 
 loss_fn = torch.nn.MSELoss()
-# optimizer = torch.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
+#optimizer = torch.optim.SGD(model.parameters(), lr=10e-4, momentum=0.9)
 optimizer = torch.optim.Adam(model.parameters(), lr=10e-4)
 start_time = time.time()
 
@@ -102,50 +103,50 @@ results_filename = RESULTS_DIR + 'results-vgg-' + date_time + '-' + str(EPOCHS) 
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-plot_filename = RESULTS_DIR + 'figs/vgg-rt60-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("VGG RT60 training loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 1)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/vgg-drr-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("VGG DRR training loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 15)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/vgg-rt60-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("VGG RT60 evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 1)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/vgg-drr-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("VGG DRR evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 15)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
+# plot_filename = RESULTS_DIR + 'figs/vgg-rt60-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("VGG RT60 training loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 1)
+# plt.legend()
+# plt.savefig(plot_filename)
+# #plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/vgg-drr-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("VGG DRR training loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 15)
+# plt.legend()
+# plt.savefig(plot_filename)
+# #plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/vgg-rt60-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("VGG RT60 evaluation loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 1)
+# plt.legend()
+# plt.savefig(plot_filename)
+# #plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/vgg-drr-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("VGG DRR evaluation loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 15)
+# plt.legend()
+# plt.savefig(plot_filename)
+# #plt.show()

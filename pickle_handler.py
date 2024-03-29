@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 RESULTS_DIR = '/home/konstantis/Nextcloud/ΤΗΜΜΥ/Thesis/Results/'
 
-pickle_file_path = RESULTS_DIR + 'results-densenet-per-mic-2024-03-03 173919.388429.pkl'
+pickle_file_path = RESULTS_DIR + 'results-cnn-2024-03-02 024311.642104-15.pkl'
 
 pkl_contents = []
 with (open(pickle_file_path, "rb")) as openfile:
@@ -61,8 +61,12 @@ else:
     print('Number of epochs:', num_epochs)
     print('DRR train loss per epoch:', mean_loss_per_epoch_train_drr)
     print('RT60 train loss per epoch:', mean_loss_per_epoch_train_rt60)
+    # print('DRR train loss per epoch:', mean_loss_per_epoch_eval_drr)
+    # print('RT60 train loss per epoch:', mean_loss_per_epoch_eval_rt60)
     print('DRR evaluation loss per epoch:', mean_loss_per_epoch_eval_drr)
     print('RT60 evaluation loss per epoch:', mean_loss_per_epoch_eval_rt60)
+    # print('DRR evaluation loss per epoch:', mean_loss_per_epoch_train_drr)
+    # print('RT60 evaluation loss per epoch:', mean_loss_per_epoch_train_rt60)
     print('Date and time:', pkl_contents[0]['datetime'])
     print('Execution time:', pkl_contents[0]['execution_time'])
 
@@ -74,8 +78,10 @@ else:
         plot_filename = plot_filename.replace(":", "")
         plt.figure(figsize=(10, 5))
         plt.title(model_name + "RT60 loss per epoch")
-        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="train")
-        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="eval")
+        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="train")
+        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="eval")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="train")
+        plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="eval")
         plt.xlabel("Epoch")
         plt.ylabel("Mean Square Error Loss")
         plt.xlim(1, )
@@ -91,13 +97,15 @@ else:
         plt.title(model_name + "DRR loss per epoch")
         plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="train")
         plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="eval")
+        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="train")
+        # plt.plot(range(1, num_epochs + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="eval")
         plt.xlabel("Epoch")
         plt.ylabel("Mean Square Error Loss")
         plt.xlim(1, )
         plt.ylim(0, 25)
         plt.legend()
-        plt.savefig(plot_filename)
-        plt.show()
+        # plt.savefig(plot_filename)
+        # plt.show()
 
         # plot_filename = RESULTS_DIR + 'figs/' + model_name + '-rt60-loss-plot-eval-' + str(
         #     pkl_contents[0]['datetime']) + '-' + str(num_epochs) + '.png'

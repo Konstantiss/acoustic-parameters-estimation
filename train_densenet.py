@@ -15,7 +15,7 @@ from tqdm import tqdm
 import pandas as pd
 from train_and_evaluate_model import *
 from dataloader import *
-#from CNN import *
+# from CNN import *
 import time
 import matplotlib.pyplot as plt
 
@@ -45,9 +45,10 @@ annotations_file_path_eval = DATA_PATH_EVAL + 'features_and_ground_truth_eval.cs
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 BATCH_SIZE = 128
-EPOCHS = 30
+EPOCHS = 15
 
 melspectogram = ta.transforms.MelSpectrogram(sample_rate=SAMPLE_RATE, n_fft=1024, hop_length=512, n_mels=64)
+spectogram = ta.transforms.Spectrogram()
 train_dataset = ACEDataset(annotations_file_path_train, melspectogram, SAMPLE_RATE, NUM_SAMPLES, device, resnet=True,
                            image_transformation=transform)
 train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
@@ -66,12 +67,12 @@ model.classifier = nn.Sequential(
 )
 
 loss_fn = torch.nn.MSELoss()
-# optimizer = torch.optim.SGD(model.parameters(), lr=10e-6, momentum=0.9)
-optimizer = torch.optim.Adam(model.parameters(), lr=10e-4)
+optimizer = torch.optim.SGD(model.parameters(), lr=10e-4, momentum=0.9)
+#optimizer = torch.optim.Adam(model.parameters(), lr=10e-4)
 start_time = time.time()
 
 mean_loss_per_epoch_train_drr, mean_loss_per_epoch_train_rt60, \
-mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60 = train_evaluate(
+    mean_loss_per_epoch_eval_drr, mean_loss_per_epoch_eval_rt60 = train_evaluate(
     model=model, train_dataloader=train_dataloader, eval_dataloader=eval_dataloader, loss_fn=loss_fn,
     optimizer=optimizer,
     device=device, epochs=EPOCHS)
@@ -102,50 +103,50 @@ results_filename = RESULTS_DIR + 'results-densenet-' + date_time + '-' + str(EPO
 with open(results_filename, 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-plot_filename = RESULTS_DIR + 'figs/densenet-rt60-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("DenseNet RT60 training loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 1)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/densenet-drr-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("DenseNet DRR training loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 15)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/densenet-rt60-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("DenseNet RT60 evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 1)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
-
-plot_filename = RESULTS_DIR + 'figs/densenet-drr-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
-plt.figure(figsize=(10, 5))
-plt.title("DenseNet DRR evaluation loss per epoch")
-plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.xlim(1, )
-plt.ylim(0, 15)
-plt.legend()
-plt.savefig(plot_filename)
-#plt.show()
+# plot_filename = RESULTS_DIR + 'figs/densenet-rt60-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("DenseNet RT60 training loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 1)
+# plt.legend()
+# plt.savefig(plot_filename)
+# # plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/densenet-drr-loss-plot-train-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("DenseNet DRR training loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_train_drr, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 15)
+# plt.legend()
+# plt.savefig(plot_filename)
+# # plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/densenet-rt60-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("DenseNet RT60 evaluation loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_rt60, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 1)
+# plt.legend()
+# plt.savefig(plot_filename)
+# # plt.show()
+#
+# plot_filename = RESULTS_DIR + 'figs/densenet-drr-loss-plot-eval-' + date_time + '-' + str(EPOCHS) + '.png'
+# plt.figure(figsize=(10, 5))
+# plt.title("DenseNet DRR evaluation loss per epoch")
+# plt.plot(range(1, EPOCHS + 1), mean_loss_per_epoch_eval_drr, linestyle='solid', marker='o', label="Mean Square Error")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.xlim(1, )
+# plt.ylim(0, 15)
+# plt.legend()
+# plt.savefig(plot_filename)
+# # plt.show()
