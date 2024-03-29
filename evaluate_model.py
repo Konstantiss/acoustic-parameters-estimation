@@ -45,11 +45,8 @@ def evaluate(model, eval_dataloader, loss_fn, device):
                 rt60_estimates = estimates[:, 1]
             loss_drr = loss_fn(drr_estimates.float(), drrs_true.float())
             loss_rt60 = loss_fn(rt60_estimates.float(), rt60s_true.float())
-            #pearson = PearsonCorrCoef().to(device)
             error_rt60 = sum(rt60_estimates.float() - rt60s_true.float()) / len(rt60s_true)
             error_drr = sum(drr_estimates.float() - drrs_true.float()) / len(drrs_true)
-            # pearson_drr = pearson(drrs_true.float(), drr_estimates.float())
-            # pearson_rt60 = pearson( rt60s_true.float(), rt60_estimates.float())
             losses_per_epoch_eval_drr.append(loss_drr.item())
             losses_per_epoch_eval_rt60.append(loss_rt60.item())
             error_per_epoch_eval_drr.append(error_drr.item())
