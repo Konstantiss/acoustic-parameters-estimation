@@ -1,5 +1,3 @@
-This repo contains the source code for my Electrical and Computer Engineering Diploma Thesis.
-
 # Room acoustic behaviour estimation with machine learning
 
 ### Abstract
