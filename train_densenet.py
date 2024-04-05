@@ -66,6 +66,9 @@ model.classifier = nn.Sequential(
     nn.Linear(1024, 2)
 )
 
+model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3,
+                               bias=False)
+
 loss_fn = torch.nn.MSELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=10e-4, momentum=0.9)
 #optimizer = torch.optim.Adam(model.parameters(), lr=10e-4)

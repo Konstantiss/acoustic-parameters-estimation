@@ -13,7 +13,6 @@ import pandas as pd
 
 PLOT_IMAGES = False
 
-
 class ACEDataset(Dataset):
 
     def __init__(self, annotations_file, transformation, target_sample_rate, num_samples, device, resnet=False,
@@ -44,7 +43,7 @@ class ACEDataset(Dataset):
         drr = self.drr_list[idx]
         rt60 = self.rt60_list[idx]
         waveform, sample_rate = ta.backend.soundfile_backend.load(
-            audio_file_path)  # (num_channels,samples) -> (1,samples) makes the waveform mono
+            audio_file_path)
         waveform = self._resample(waveform, sample_rate)
         waveform = self._mix_down(waveform)
         waveform = self._cut(waveform)

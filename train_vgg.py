@@ -58,6 +58,8 @@ eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE, shuffle=True)
 #model = models.vgg19(pretrained=True).to(device)
 model = models.vgg11(pretrained=True).to(device)
 
+pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 # Freeze all the pre-trained layers
 for param in model.parameters():
     param.requires_grad = False
@@ -65,6 +67,9 @@ for param in model.parameters():
 model.classifier = nn.Sequential(
     nn.Linear(in_features=25088, out_features=2)
 )
+
+model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3,
+                               bias=False)
 
 loss_fn = torch.nn.MSELoss()
 #optimizer = torch.optim.SGD(model.parameters(), lr=10e-4, momentum=0.9)

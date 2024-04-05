@@ -63,6 +63,9 @@ for param in model.parameters():
 
 model.fc = nn.Linear(model.fc.in_features, 2)
 
+model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3,
+                               bias=False)
+
 model.load_state_dict(torch.load(RESULTS_DIR + 'resnet-save-2024-03-02 064213.893337-15.bin'))
 
 #summary(model, (3, 224, 224))
